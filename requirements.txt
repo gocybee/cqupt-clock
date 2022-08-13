@@ -1,0 +1,4 @@
+requests~=2.28.1
+selenium~=4.4.0
+captcha~=0.4
+flask~=2.2.2
