@@ -16,13 +16,12 @@ class DailyClock:
             name: 你的姓名
             stu_id: 你的学号
         """
-        self.castgc = kargs['castgc']
         self.cookies = const.Cookies.copy()
-        self.cookies.setdefault('CASTGC', cookie.get('CASTGC'))
-        self.cookies.setdefault('JSESSIONID', cookie.get('JSESSIONID'))
-        self.cookies.setdefault('route', cookie.get('route'))
-
-        self.cookies['CASTGC'] = kargs['castgc']
+        self.cookies['CASTGC'] = cookie.get('CASTGC')
+        self.cookies['JSESSIONID'] = cookie.get('JSESSIONID')
+        self.cookies['route'] = cookie.get('route')
+        self.username = kargs['username']
+        self.password = kargs['password']
         self.headers = const.Headers.copy()
         self.role_id = -1
         self.name = kargs['name']
@@ -36,9 +35,12 @@ class DailyClock:
         """
         准备 _WEU, MOD_AUTH_CAS
         """
+        login(self.username, self.password)
+        print(self.cookies.get('CASTGC'))
         resp = requests.get(
             url=const.GET_STU_ID,
             headers=self.headers,
+            cookies={'CASTGC': self.cookies.get('CASTGC')}
         )
         if resp.status_code != 200 or resp.headers['Content-Type'].__contains__('text/html'):
             raise BaseException('获取中间 cookie 失败')
@@ -151,7 +153,7 @@ class DailyClock:
     def clock(
             self,
             mqjzd="重庆市,重庆市,南岸区",
-            jzdxxdz="重庆邮电大学 知行7舍",
+            jzdxxdz="重庆邮电大学 宁静6",
             tzrysfyc="无同住人员",
             longitude=106.602482,  # 经度 (重庆)
             latitude=29.537199,  # 纬度 (重庆)
@@ -204,7 +206,6 @@ class DailyClock:
 
 
 if __name__ == '__main__':
-    login(const.ARGS['username'], const.ARGS['password'])
     for arg in const.ARGS:
         daily = DailyClock(**arg)
         daily.clock('''force=True''')

@@ -11,8 +11,6 @@ import datetime
 # 如果打开上面的网站直接跳转到登录好的页面的话，那你之前可能选过 7天内免登录，
 # 可以删除所有 Cookie 后重新获取一个新的 CASTGC
 
-USERNAME = ''
-PASSWORD = ''
 
 ARGS = [
     {

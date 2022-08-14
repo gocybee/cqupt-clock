@@ -6,7 +6,6 @@ import win32crypt
 
 
 def update():
-    encrypted_key = None
     with open("./selenium/Local State", 'r') as file:
         encrypted_key = json.loads(file.read())['os_crypt']['encrypted_key']
     encrypted_key = base64.b64decode(encrypted_key)
@@ -42,6 +41,12 @@ def update():
 def get(name):
     conn = sqlite3.connect('./selenium/Default/Network/Cookies')
     cur = conn.cursor()
-    cur.execute('SELECT name, value, FROM cookies where name = ?', name)
+    cur.execute('SELECT name, value FROM cookies where name = ?', [name])
     value = cur.fetchone()
     cur.close()
+    return str(value[1], encoding='utf-8')
+
+
+# if __name__ == "__main__":
+#     # update()
+#     print(get('CASTGC'))

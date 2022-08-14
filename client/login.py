@@ -55,7 +55,6 @@ def login(username, password):
         browser.find_element(By.ID, 'captcha').send_keys(j['data'])
 
         browser.find_element(By.ID, 'rememberMe').click()
-        time.sleep(5)
         browser.find_element(By.ID, 'login_submit').click()
         time.sleep(5)
         if "accountsecurity" in browser.current_url:
