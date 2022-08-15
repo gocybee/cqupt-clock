@@ -78,13 +78,17 @@ class DailyClock:
         resp.close()
         del resp
 
-    def clock_history(self, today=False, sfdk=None, pageSize=None, pageNum=None):
+    def clock_history_on(self, rq=None, sfdk=None, pageSize=None, pageNum=None):
         """
         查询打卡历史信息
+        rq: 字符串(例如 2022-08-10 )，会覆盖 today，锁定某一天的历史
+        sfdk: 是/否/None，限制是否打卡的记录
+        pageSize: 限制打卡记录页大小
+        pageNum: 限制打卡记录页数目
         """
         __data = {}
-        if today:
-            __data['RQ'] = datetime.datetime.now().strftime('%Y-%m-%d')
+        if rq is not None:
+            __data['RQ'] = rq
         if sfdk is not None:
             __data['SFDK'] = sfdk
         if pageSize is not None:
@@ -102,13 +106,13 @@ class DailyClock:
             raise BaseException('查询打卡历史失败')
         return json.loads(resp.text)
 
-    def check_today(self):
+    def check_date(self, rq):
         """
-        检查今天是否打卡
+        检查指定日期是否打卡
         """
-        mess = self.clock_history(today=True)
+        mess = self.clock_history_on(rq=rq)
         rows = mess['datas']['T_XSJKDK_XSTBXX_QUERY']['rows']
-        if len(rows) == 0:  # 今天的数据还没有同步
+        if len(rows) == 0:  # rq 的数据还没有同步
             self.sync = False
             return False
         self.sync = True
@@ -152,11 +156,11 @@ class DailyClock:
     #     mess = json.loads(resp.text)['datas']['V_SSJBXXZB_QUERY']['rows'][0]
     #     return mess['XM'], mess['XH']  # 姓名，学号
 
-    def get_wid(self) -> str:
+    def get_wid_on(self, rq) -> str:
         """
         获取今天的 WID 字段
         """
-        mess = self.clock_history(today=True)
+        mess = self.clock_history_on(rq=rq)
         rows = mess['datas']['T_XSJKDK_XSTBXX_QUERY']['rows']
         if len(rows) == 0:
             self.sync = False
@@ -164,16 +168,19 @@ class DailyClock:
         self.sync = True
         return rows[0]['WID']
 
-    def clock(
+    def clock_on(
             self,
+            date: datetime.datetime,
             force=False
     ):
+        rq = date.strftime('%Y-%m-%d')
+        wid = self.get_wid_on(rq=rq)
         print(f'正在{"准备" if not force else "强制"}给 {self.name} {self.stu_id} 自动打卡...')
-        if self.check_today() and (not force):  # 已经打卡了就不打了
-            print('今天已经打卡了')
+        if self.check_date(rq=rq) and (not force):  # 已经打卡了就不打了
+            print(f'{rq} 已经打卡了')
             return
         if not self.sync:
-            print('今天数据还未同步，暂时打不了卡')
+            print(f'{rq} 数据还未同步，暂时打不了卡')
             return
         __data = {
             'XH': f"{self.stu_id}",  # 学号
@@ -192,7 +199,7 @@ class DailyClock:
             "RQ": self.__random_time().strftime("%Y-%m-%d"),  # 打卡日期
             "SFYC": "否",
             "SFDK": "是",
-            "WID": self.get_wid(),
+            "WID": wid,
             'SFTS': "是",  # 是否同省份
             'SFTQX': "是",  # 是否同区县
             'LONGITUDE': f'{self.__random_titude(self.clock_details["longitude"])}',  # 经度 (重庆)
@@ -219,4 +226,4 @@ class DailyClock:
 if __name__ == '__main__':
     for arg in const.ARGS:
         daily = DailyClock(**arg)
-        daily.clock(force=True)
+        daily.clock_on(date=datetime.datetime.now(), force=False)
