@@ -11,7 +11,13 @@ account = env_dict.get("EMAIL_ACCOUNT")
 password = env_dict.get("EMAIL_PASSWORD")
 
 
-def notice(msg):
+def check():
+    if account is not None and password is not None:
+        return True
+    return False
+
+
+def do(msg):
     """
      subject:打卡失败 body: err
      subject:打卡成功 body: 芜湖~~~~~~~~

@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 from captcha import captcha as c
 from clock import const as const
 from clock.clock import DailyClock as Clock
+from notice import notice
 
 app = Flask('jwzx')
 
@@ -77,7 +78,7 @@ def do():
             "ok": "false",
             "msg": f'参数{err.args[0]}没有填写'
         }
-    except const.LoginErr:
+    except const.LOGIN_ERR:
         res = {
             "code": "401",
             "ok": "false",
@@ -109,7 +110,11 @@ def do():
             "ok": "true",
             "msg": "打卡成功"
         }
+        if notice.check():
+            notice.do(res['msg'])
         return jsonify(res), 200
+    if notice.check():
+        notice.do(res['msg'])
     return jsonify(res), 401
 
 
