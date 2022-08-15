@@ -21,10 +21,12 @@ LOGIN_URL = 'https://ids.cqupt.edu.cn/authserver/login'
 
 
 def login(username, password):
-    # 设置chrome存储用户数据的位置(cookies)
     chrome_option = webdriver.ChromeOptions()
     current_dir_path = os.getcwd()
-    chrome_option.add_argument(f'user-data-dir={current_dir_path}/selenium')
+    chrome_option.add_argument(f'user-data-dir={current_dir_path}/clock/cookies')  # 设置用户数据存储位置
+    chrome_option.add_argument('-no-sandbox')  # 让chrome在root权限下跑
+    chrome_option.add_argument('-disable-dev-shm-usage')
+    chrome_option.add_argument('-headless')  # 不用打开图形界面
 
     browser = webdriver.Chrome(chrome_options=chrome_option)
 
