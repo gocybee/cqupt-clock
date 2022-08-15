@@ -17,16 +17,19 @@ def check():
     return False
 
 
-def do(msg):
+def notice(msg):
     """
      subject:打卡失败 body: err
      subject:打卡成功 body: 芜湖~~~~~~~~
     """
-    # 发送的邮件正文
-    email_msg = MIMEText(msg.body, "plain", "utf-8")
-    email_msg["subject"] = Header(msg.subject, "utf-8")
-    smtp = smtplib.SMTP_SSL(email_smtp_server, 465)
-    # 配置发送邮件的用户名和密码
-    smtp.login(account, password)
-    # 配置发送邮件、接受邮件和邮件内容
-    smtp.sendmail(account, account, email_msg.as_string())
+    message = MIMEText(msg.body, 'plain', 'utf-8')  # 邮件正文
+    # (plain表示mail_body的内容直接显示，也可以用text，则mail_body的内容在正文中以文本的形式显示，需要下载）
+    message['From'] = account  # 邮件上显示的发件人
+    message['To'] = account  # 邮件上显示的收件人
+    message['Subject'] = Header(msg.subject, 'utf-8')  # 邮件主题
+
+    smtp = smtplib.SMTP()  # 创建一个连接
+    smtp.connect(email_smtp_server)  # 连接发送邮件的服务器
+    smtp.login(account, password)  # 登录服务器
+    smtp.sendmail(account, account, message.as_string())  # 填入邮件的相关信息并发送
+    smtp.quit()
