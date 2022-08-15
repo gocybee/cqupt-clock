@@ -1,7 +1,5 @@
 import datetime
 
-# 注意：请确保已经过凌晨三点打卡程序才可以启动，不然可能会打错卡
-
 # 定义错误类型
 LOGIN_ERR = RuntimeError('login failed')
 GET_MIDDLE_COOKIE_ERR = RuntimeError('get middle cookie failed')
