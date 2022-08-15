@@ -1,16 +1,11 @@
-import os
-
 import numpy as np
 import torch
 from PIL import Image
 from torch.autograd import Variable
 
-import captcha.cnn.setting as setting
 import captcha.cnn.model as model
+import captcha.cnn.setting as setting
 from captcha.dataset import dataset
-
-
-# from cnn import setting,dataset,cnn as CNN
 
 
 def get(img=Image.Image):

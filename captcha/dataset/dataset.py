@@ -4,8 +4,8 @@ import torchvision.transforms as transforms
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 
-import captcha.dataset.encoding as ohe
 import captcha.cnn.setting as setting
+import captcha.dataset.encoding as ohe
 
 
 class MyDataSet(Dataset):

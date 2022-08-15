@@ -44,4 +44,4 @@ def plot_result(path):
     plt.xlabel("epoch")
     plt.ylabel("accuracy")
     plt.show()
-    fig.savefig("results.png", dpi=300)
+    fig.savefig("../model/results.png", dpi=300)

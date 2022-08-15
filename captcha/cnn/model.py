@@ -1,7 +1,6 @@
 import torch.nn as nn
 import torchvision
 
-
 # CNN Model (2 conv layer)
 from captcha.cnn import setting
 

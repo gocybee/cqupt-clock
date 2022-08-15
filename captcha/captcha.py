@@ -34,8 +34,9 @@ def get_captcha_img(timestamp, session_id, route):
                          headers=headers)
     img_response.close()
     image = Image.open(BytesIO(img_response.content))
-    plt.imshow(image)
-    plt.show()
+
+    # plt.imshow(image)
+    # plt.show()
     return image
 
 

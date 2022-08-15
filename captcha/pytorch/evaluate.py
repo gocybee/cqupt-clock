@@ -2,9 +2,9 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 
-from captcha.dataset import encoding
-from captcha.dataset import dataset
 from captcha.cnn.model import *
+from captcha.dataset import dataset
+from captcha.dataset import encoding
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
