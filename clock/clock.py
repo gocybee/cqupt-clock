@@ -64,8 +64,9 @@ class DailyClock:
         """
 
         # 自动登录获取'CASTGC'等cookie
-        if not login(self.studentInfo.username, self.studentInfo.password):
-            raise RuntimeError('登录失败')
+        if not cookie.check('CASTGC'):
+            if not login(self.studentInfo.username, self.studentInfo.password):
+                raise RuntimeError('登录失败')
 
         s = requests.session()
         s.cookies.set_cookie(cookie=cookie.get('CASTGC'))

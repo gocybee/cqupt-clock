@@ -24,7 +24,7 @@ def captcha():
     img = c.get_captcha_img(timestamp, session_id, route)
     # 获取对应captcha的answer
     answer = c.get_captcha_answer(img)
-    print(answer)
+    print(f'获取到验证码答案:{answer}')
     res = {
         "code": "200",
         "ok": "true",
