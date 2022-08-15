@@ -18,9 +18,18 @@ def captcha():
         "route": "",       填写cookie中的route的value
     """
     req = request.args.to_dict()
-    timestamp = req['timestamp']
-    session_id = req['session_id']
-    route = req['route']
+    try:
+        timestamp = req['timestamp']
+        session_id = req['session_id']
+        route = req['route']
+    except KeyError as err:
+        res = {
+            "code": "401",
+            "ok": "false",
+            "data": "",
+            "msg": f'获取验证码失败,参数{err.args[0]}没有填写'
+        }
+        return jsonify(res), 401
     # 通过时间戳和session_id获取对应的captcha
     img = c.get_captcha_img(timestamp, session_id, route)
     # 获取对应captcha的answer
@@ -29,7 +38,8 @@ def captcha():
     res = {
         "code": "200",
         "ok": "true",
-        "data": answer
+        "data": answer,
+        "msg": "获取验证码成功"
     }
     return jsonify(res), 200
 
