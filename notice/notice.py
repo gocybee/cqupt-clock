@@ -5,10 +5,10 @@ from email.mime.text import MIMEText
 
 email_smtp_server = "smtp.qq.com"
 
-env_dist = os.environ
+env_dict = os.environ
 
-account = env_dist.get("EMAIL_ACCOUNT")
-password = env_dist.get("EMAIL_PASSWORD")
+account = env_dict.get("EMAIL_ACCOUNT")
+password = env_dict.get("EMAIL_PASSWORD")
 
 
 def notice(msg):
