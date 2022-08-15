@@ -44,8 +44,8 @@ def do():
         "district": "",    填写你的地区,例如:"重庆市,重庆市,南岸区"
         "location": "",    填写你的具体地点,例如:"重庆邮电大学 宁静6"
         "roommates": "",   填写同住人员是否异常,选项: "是","无","无同住人员"
-        "longitude": num,  填写你的经度,例如: 106.608634
-        "latitude": num,   填写你的维度,例如: 29.528421
+        "longitude": "",  填写你的经度,例如: 106.608634
+        "latitude": "",   填写你的维度,例如: 29.528421
     """
     req = request.form.to_dict()
     clock = Clock(args=req)
