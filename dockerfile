@@ -1,14 +1,27 @@
 FROM pytorch/pytorch:1.12.1-cuda11.3-cudnn8-runtime
 
 EXPOSE 8089
+ENV DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /src
+WORKDIR /workspace
 
-COPY . /src
-RUN unset LD_PRELOAD
-#RUN sudo chown -R root /.cache/pip/
-#RUN sudo -H pip3 install --upgrade -r requirements.txt
-RUN pip install pycryptodomex
-RUN pip selenium
+COPY . /workspace
+# 安装python依赖包
+RUN pip install flask -i https://mirrors.aliyun.com/pypi/simple/
+RUN pip install selenium -i https://mirrors.aliyun.com/pypi/simple/
+RUN pip install browser-cookie3 -i https://mirrors.aliyun.com/pypi/simple/
+RUN pip install matplotlib -i https://mirrors.aliyun.com/pypi/simple/
+# 更新apt-get源
+RUN cp ./dependency/sources.list /etc/apt/sources.list
+RUN apt-get update
+# 安装chrome环境
+RUN apt-get --fix-broken install -y ./dependency/google-chrome-stable_current_amd64.deb
+RUN dpkg -i ./dependency/google-chrome-stable_current_amd64.deb
+RUN cp ./dependency/chromedriver /usr/bin
+RUN chmod +x /usr/bin/chromedriver
+# 设置系统时区
+RUN apt-get install -y tzdata # 该镜像没有zoneinfo文件夹
+RUN rm -f /etc/localtime
+RUN ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 #
 #CMD python /src/server.py
