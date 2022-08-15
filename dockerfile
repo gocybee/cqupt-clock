@@ -16,7 +16,6 @@ RUN cp ./dependency/sources.list /etc/apt/sources.list
 RUN apt-get update
 # 安装chrome环境
 RUN apt-get --fix-broken install -y ./dependency/google-chrome-stable_current_amd64.deb
-RUN dpkg -i ./dependency/google-chrome-stable_current_amd64.deb
 RUN cp ./dependency/chromedriver /usr/bin
 RUN chmod +x /usr/bin/chromedriver
 # 设置系统时区
