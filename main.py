@@ -93,7 +93,7 @@ def do():
         }
     else:
         print('获取cookie成功')
-        clock.clock_on(date=datetime.datetime.now(), force=False)
+        clock.clock_on(clock_date=datetime.datetime.now(), force=False)
         res = {
             "code": "200",
             "ok": "true",
