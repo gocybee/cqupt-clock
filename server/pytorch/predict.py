@@ -16,7 +16,7 @@ def get(img=Image.Image):
     cnn.eval()
 
     # 加载最佳模型
-    cnn.load_state_dict(torch.load('./model/cnn_last.pt'))
+    cnn.load_state_dict(torch.load('./model/cnn_last.pt', map_location=torch.device('cpu')))
 
     # 加载图片
     # predict_dataloader = dataset.get_predict_datas_loader()
