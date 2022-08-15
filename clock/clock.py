@@ -116,7 +116,7 @@ class DailyClock:
         resp.close()
         del resp
 
-    def clock_history_on(self, rq=None, sfdk=None, pageSize=None, pageNum=None):
+    def clock_history_on(self, date=None, sfdk=None, pageSize=None, pageNum=None):
         """
         查询打卡历史信息
         rq: 字符串(例如 2022-08-10 )，会覆盖 today，锁定某一天的历史
@@ -125,8 +125,8 @@ class DailyClock:
         pageNum: 限制打卡记录页数目
         """
         __data = {}
-        if rq is not None:
-            __data['RQ'] = rq
+        if date is not None:
+            __data['RQ'] = date
         if sfdk is not None:
             __data['SFDK'] = sfdk
         if pageSize is not None:
@@ -144,11 +144,11 @@ class DailyClock:
             raise const.GET_CLOCK_HISTORY_ERR
         return json.loads(resp.text)
 
-    def check_date(self, rq):
+    def check_date(self, date):
         """
         检查指定日期是否打卡
         """
-        mess = self.clock_history_on(rq=rq)
+        mess = self.clock_history_on(date=date)
         rows = mess['datas']['T_XSJKDK_XSTBXX_QUERY']['rows']
         if len(rows) == 0:  # rq 的数据还没有同步
             self.sync = False
@@ -167,21 +167,21 @@ class DailyClock:
     @staticmethod
     def __random_time(pivot: datetime.datetime):
         """
-        搞点随机的时间，请确保已经过凌晨三点打卡程序才可以启动，不然可能会打错卡
+        搞点随机的时间
         """
         now = pivot
-        now += datetime.timedelta(hours=random.choice((-2, -1, 0, 1, 2)))  # [-2, 2]
-        now += datetime.timedelta(minutes=random.choice((1, -1)) * random.choice(range(60)))
-        now += datetime.timedelta(seconds=random.choice((1, -1)) * random.choice(range(60)))
+        # now += datetime.timedelta(hours=random.choice((-2, -1, 0, 1, 2)))  # [-2, 2]
+        now += datetime.timedelta(minutes=random.choice(range(30)))
+        now += datetime.timedelta(seconds=random.choice(range(60)))
         # if now.weekday() != datetime.datetime.now().weekday():
         #     return self.__random_time()
         return now
 
-    def get_wid_on(self, rq) -> str:
+    def get_wid_on(self, date) -> str:
         """
         获取今天的 WID 字段
         """
-        mess = self.clock_history_on(rq=rq)
+        mess = self.clock_history_on(date=date)
         rows = mess['datas']['T_XSJKDK_XSTBXX_QUERY']['rows']
         if len(rows) == 0:
             self.sync = False
@@ -191,17 +191,17 @@ class DailyClock:
 
     def clock_on(
             self,
-            date: datetime.datetime,
+            clock_date: datetime.datetime,
             force=False
     ):
-        rq = date.strftime('%Y-%m-%d')
-        wid = self.get_wid_on(rq=rq)
+        clock_date = clock_date.strftime('%Y-%m-%d')
+        wid = self.get_wid_on(date=clock_date)
         print(f'正在{"准备" if not force else "强制"}给 {self.studentInfo.name} {self.studentInfo.id} 自动打卡...')
-        if self.check_date(rq=rq) and (not force):  # 已经打卡了就不打了
-            print(f'{rq} 已经打卡了')
+        if self.check_date(date=clock_date) and (not force):  # 已经打卡了就不打了
+            print(f'{clock_date} 已经打卡了')
             return
         if not self.sync:
-            print(f'{rq} 数据还未同步，暂时打不了卡')
+            print(f'{clock_date} 数据还未同步，暂时打不了卡')
             return
         __data = {
             'XH': f"{self.studentInfo.id}",  # 学号
@@ -216,8 +216,8 @@ class DailyClock:
             "TZRYSFYC": f"{self.clockDetails.roommates}",  # 同住人员情况
             "YKMYS": "绿色",  # 渝康码颜色
             "QTSM": "无",  # 其他说明
-            "DKSJ": self.__random_time(date).strftime("%Y-%m-%d %H:%M:%S"),  # 打卡具体时间
-            "RQ": self.__random_time(date).strftime("%Y-%m-%d"),  # 打卡日期
+            "DKSJ": self.__random_time(clock_date).strftime("%Y-%m-%d %H:%M:%S"),  # 打卡具体时间
+            "RQ": self.__random_time(clock_date).strftime("%Y-%m-%d"),  # 打卡日期
             "SFYC": "否",
             "SFDK": "是",
             "WID": wid,
