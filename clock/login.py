@@ -5,6 +5,8 @@ import time
 import requests
 from selenium import webdriver
 
+from clock import const as const
+
 
 class By(object):
     ID = "id"
@@ -77,7 +79,6 @@ def login(username, password):
         '''
         if "accountsecurity" in browser.current_url:
             print('登录成功')
-            return True
 
         '''
         如果登录五次还没有登录成功,则停止登录
@@ -85,4 +86,4 @@ def login(username, password):
         '''
         if login_count == 5:
             print('登录失败')
-            return False
+            raise const.LOGIN_ERR
