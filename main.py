@@ -89,7 +89,7 @@ def do():
             "ok": "true",
             "msg": "打卡成功"
         }
-        return jsonify(res), 401
+        return jsonify(res), 200
     return jsonify(res), 401
 
 
