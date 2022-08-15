@@ -7,8 +7,8 @@ from torch.autograd import Variable
 
 import evaluate
 import torch_util
-from server.cnn.model import *
-from server.dataset import dataset
+from captcha.cnn.model import *
+from captcha.dataset import dataset
 
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 

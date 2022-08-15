@@ -3,7 +3,7 @@ import torchvision
 
 
 # CNN Model (2 conv layer)
-from server.cnn import setting
+from captcha.cnn import setting
 
 
 class CNN(nn.Module):

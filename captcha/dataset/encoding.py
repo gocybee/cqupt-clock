@@ -1,6 +1,6 @@
 import numpy as np
 
-import server.cnn.setting as setting
+import captcha.cnn.setting as setting
 
 
 def encode(text):
