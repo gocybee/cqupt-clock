@@ -2,6 +2,12 @@ import datetime
 
 # 注意：请确保已经过凌晨三点打卡程序才可以启动，不然可能会打错卡
 
+# 定义错误类型
+LOGIN_ERR = RuntimeError('login failed')
+GET_MIDDLE_COOKIE_ERR = RuntimeError('get middle cookie failed')
+UPDATE_WEU_ERR = RuntimeError('update "_weu" cookie failed')
+GET_CLOCK_HISTORY_ERR = RuntimeError('get clock history failed')
+
 # 伪造请求头
 Headers = {
     'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',

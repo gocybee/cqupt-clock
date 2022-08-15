@@ -1,9 +1,10 @@
 import datetime
 
-from captcha import captcha as c
-from clock.clock import DailyClock as Clock
-
 from flask import Flask, request, jsonify
+
+from captcha import captcha as c
+from clock import const as const
+from clock.clock import DailyClock as Clock
 
 app = Flask('jwzx')
 
@@ -30,7 +31,7 @@ def captcha():
         "ok": "true",
         "data": answer
     }
-    return jsonify(res)
+    return jsonify(res), 200
 
 
 @app.route('/do', methods=['post'])
@@ -48,8 +49,48 @@ def do():
         "latitude": "",    填写你的维度,例如: 29.528421
     """
     req = request.form.to_dict()
-    clock = Clock(args=req)
-    clock.clock_on(date=datetime.datetime.now(), force=False)
+    try:
+        clock = Clock(args=req)
+    except KeyError as err:
+        res = {
+            "code": "401",
+            "ok": "false",
+            "msg": f'参数{err.args[0]}没有填写'
+        }
+    except const.LoginErr:
+        res = {
+            "code": "401",
+            "ok": "false",
+            "msg": "登录失败"
+        }
+    except const.GET_MIDDLE_COOKIE_ERR:
+        res = {
+            "code": "401",
+            "ok": "false",
+            "msg": "获取中间cookie失败"
+        }
+    except const.UPDATE_WEU_ERR:
+        res = {
+            "code": "401",
+            "ok": "false",
+            "msg": r'更新 "_WEU" cookie失败'
+        }
+    except const.GET_CLOCK_HISTORY_ERR:
+        res = {
+            "code": "401",
+            "ok": "false",
+            "msg": "获取打卡历史失败"
+        }
+    else:
+        print('获取cookie成功')
+        clock.clock_on(date=datetime.datetime.now(), force=False)
+        res = {
+            "code": "200",
+            "ok": "true",
+            "msg": "打卡成功"
+        }
+        return jsonify(res), 401
+    return jsonify(res), 401
 
 
 if __name__ == '__main__':

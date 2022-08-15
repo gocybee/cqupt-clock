@@ -15,7 +15,7 @@ def get():
 
 class DailyClock:
 
-    def __init__(self, args):
+    def __init__(self, args=dict):
         # 初始化个人信息
         class StudentInfo:
             def __init__(self, name, stu_id, username, password):
@@ -24,6 +24,7 @@ class DailyClock:
                 self.username = username
                 self.password = password
 
+        print('初始化个人信息...')
         self.studentInfo = StudentInfo(
             name=args['name'],
             stu_id=args['stu_id'],
@@ -40,6 +41,7 @@ class DailyClock:
                 self.longitude = longitude
                 self.latitude = latitude
 
+        print('初始化打卡信息...')
         self.clockDetails = ClockDetails(
             district=args['district'],
             location=args['location'],
@@ -64,10 +66,17 @@ class DailyClock:
         """
 
         # 自动登录获取'CASTGC'等cookie
-        if not cookie.check('CASTGC'):
-            if not login(self.studentInfo.username, self.studentInfo.password):
-                raise RuntimeError('登录失败')
+        print(r'获取 "CASTGC" cookie...')
+        if not cookie.check('CASTGC'):  # 检查"CASTGC"cookie是否存在,且是否过期
+            print('登录中...')
+            try:
+                login(self.studentInfo.username, self.studentInfo.password)
+            except const.LOGIN_ERR:
+                print('登录失败')
+                raise const.LOGIN_ERR
 
+        # 获取中间cookie
+        print('获取中间cookie...')
         s = requests.session()
         s.cookies.set_cookie(cookie=cookie.get('CASTGC'))
 
@@ -76,9 +85,9 @@ class DailyClock:
                          url=const.GET_STU_ID,
                          headers=self.headers)
         if resp.status_code != 200 or resp.headers['Content-Type'].__contains__('text/html'):
-            raise RuntimeError('获取中间 cookie 失败')
+            print('获取中间cookie失败')
+            raise const.GET_MIDDLE_COOKIE_ERR
 
-        print(self.cookies)
         self.cookies['_WEU'] = resp.cookies['_WEU']
         # 第一次重定向会设置 'MOD_AUTH_CAS'
         self.cookies['MOD_AUTH_CAS'] = resp.history[2].cookies['MOD_AUTH_CAS']
@@ -93,6 +102,7 @@ class DailyClock:
         """
         刷新 _WEU
         """
+        print(r'刷新 "_WEU" cookie...')
         refresh_weu = const.REFRESH_WEU_ + self.roleId + '.do'
         resp = requests.get(
             url=refresh_weu,
@@ -100,7 +110,8 @@ class DailyClock:
             cookies=self.cookies,
         )
         if resp.status_code != 200 or json.loads(resp.text)['success'] != True:
-            raise RuntimeError('更新 _WEU 失败')
+            print(r'刷新 "_WEU" cookie失败')
+            raise const.UPDATE_WEU_ERR
         self.cookies['_WEU'] = resp.cookies['_WEU']
         resp.close()
         del resp
@@ -130,7 +141,7 @@ class DailyClock:
             cookies=self.cookies,
         )
         if resp.status_code != 200 or resp.headers['Content-Type'].__contains__('text/html'):
-            raise RuntimeError('查询打卡历史失败')
+            raise const.GET_CLOCK_HISTORY_ERR
         return json.loads(resp.text)
 
     def check_date(self, rq):
