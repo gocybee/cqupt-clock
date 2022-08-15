@@ -22,5 +22,5 @@ RUN chmod +x /usr/bin/chromedriver
 RUN apt-get install -y tzdata # 该镜像没有zoneinfo文件夹
 RUN rm -f /etc/localtime
 RUN ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-#
-#CMD python /src/server.py
+
+CMD ["python","main.py"]
