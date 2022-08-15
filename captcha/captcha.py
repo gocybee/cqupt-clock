@@ -1,11 +1,10 @@
-import http.cookiejar
 from io import BytesIO
 
 import requests
 from PIL import Image
 from matplotlib import pyplot as plt
 
-import pytorch.predict as predict
+import captcha.pytorch.predict as predict
 
 # 设置获取captcha的请求头
 

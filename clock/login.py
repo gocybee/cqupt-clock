@@ -1,7 +1,7 @@
 import json
 import os
 import time
-import cookie
+
 import requests
 from selenium import webdriver
 

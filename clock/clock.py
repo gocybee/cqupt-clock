@@ -1,37 +1,57 @@
-import http.cookiejar
-import urllib.request
+import datetime
+import json
+import random
 
 import requests
-import json
-import datetime
-import random
-import const
-from login import login
-import cookie
+
+from clock import const as const
+from clock import cookie
+from clock.login import login
+
+
+def get():
+    print(1)
 
 
 class DailyClock:
 
-    def __init__(self, **kargs):
-        # 初始化账号信息
-        self.username = kargs['username']
-        self.password = kargs['password']
+    def __init__(self, args):
+        # 初始化个人信息
+        class StudentInfo:
+            def __init__(self, name, stu_id, username, password):
+                self.name = name
+                self.id = stu_id
+                self.username = username
+                self.password = password
 
-        self.cookies = const.Cookies.copy()
-
-        self.headers = const.Headers.copy()
-        self.role_id = -1
-        self.name = kargs['name']
-        self.stu_id = kargs['stu_id']
+        self.studentInfo = StudentInfo(
+            name=args['name'],
+            stu_id=args['stu_id'],
+            username=args['username'],
+            password=args['password'],
+        )
 
         # 初始化打卡信息
-        self.clock_details = {
-            'mqjzd': kargs['district'],
-            'jzdxxdz': kargs['location'],
-            'tzrysfyc': kargs['roommates'],
-            'longitude': kargs['longitude'],
-            'latitude': kargs['latitude']
-        }
+        class ClockDetails:
+            def __init__(self, district, location, roommates, longitude, latitude):
+                self.district = district
+                self.location = location
+                self.roommates = roommates
+                self.longitude = longitude
+                self.latitude = latitude
+
+        self.clockDetails = ClockDetails(
+            district=args['district'],
+            location=args['location'],
+            roommates=args['roommates'],
+            longitude=args['longitude'],
+            latitude=args['latitude'],
+        )
+
+        self.roleId = str(-1)
+
+        self.headers = const.Headers.copy()
+        self.cookies = const.Cookies.copy()
 
         # 今天的数据是否同步
         self.sync = True
@@ -44,13 +64,11 @@ class DailyClock:
         """
 
         # 自动登录获取'CASTGC'等cookie
-        if not login(self.username, self.password):
+        if not login(self.studentInfo.username, self.studentInfo.password):
             raise RuntimeError('登录失败')
 
         s = requests.session()
         s.cookies.set_cookie(cookie=cookie.get('CASTGC'))
-        s.cookies.set_cookie(cookie=cookie.get('JSESSIONID'))
-        s.cookies.set_cookie(cookie=cookie.get('route'))
 
         # 根据'CASTGC'cookie获取'_WEU','MOD_AUTH_CAS'等cookie
         resp = s.request(method='GET',
@@ -59,10 +77,14 @@ class DailyClock:
         if resp.status_code != 200 or resp.headers['Content-Type'].__contains__('text/html'):
             raise RuntimeError('获取中间 cookie 失败')
 
+        print(self.cookies)
         self.cookies['_WEU'] = resp.cookies['_WEU']
-        # 第三次重定向会设置 MOD_AUTH_CAS
+        # 第一次重定向会设置 'MOD_AUTH_CAS'
         self.cookies['MOD_AUTH_CAS'] = resp.history[2].cookies['MOD_AUTH_CAS']
-        self.role_id = json.loads(resp.text)['HEADER']['dropMenu'][0]['id']
+        self.roleId = json.loads(resp.text)['HEADER']['dropMenu'][0]['id']
+        # 第二次重定向会设置 'JSESSIONID'和'route'
+        self.cookies['JSESSIONID'] = resp.history[1].cookies['JSESSIONID']
+        self.cookies['route'] = resp.history[1].cookies['route']
         resp.close()
         del resp
 
@@ -70,7 +92,7 @@ class DailyClock:
         """
         刷新 _WEU
         """
-        refresh_weu = const.REFRESH_WEU_ + self.role_id + '.do'
+        refresh_weu = const.REFRESH_WEU_ + self.roleId + '.do'
         resp = requests.get(
             url=refresh_weu,
             headers=self.headers,
@@ -127,6 +149,7 @@ class DailyClock:
         """
         给经纬度加点噪音
         """
+        ratio = float(ratio)
         return round((random.random() * 0.0005) * random.choice((-1, 1)) + ratio, 6)
 
     @staticmethod
@@ -161,7 +184,7 @@ class DailyClock:
     ):
         rq = date.strftime('%Y-%m-%d')
         wid = self.get_wid_on(rq=rq)
-        print(f'正在{"准备" if not force else "强制"}给 {self.name} {self.stu_id} 自动打卡...')
+        print(f'正在{"准备" if not force else "强制"}给 {self.studentInfo.name} {self.studentInfo.id} 自动打卡...')
         if self.check_date(rq=rq) and (not force):  # 已经打卡了就不打了
             print(f'{rq} 已经打卡了')
             return
@@ -169,16 +192,16 @@ class DailyClock:
             print(f'{rq} 数据还未同步，暂时打不了卡')
             return
         __data = {
-            'XH': f"{self.stu_id}",  # 学号
-            "XM": f"{self.name}",  # 姓名
-            "MQJZD": f"{self.clock_details['mqjzd']}",  # 目前居住地
-            "JZDXXDZ": f"{self.clock_details['jzdxxdz']}",  # 居住地详细地址
+            'XH': f"{self.studentInfo.id}",  # 学号
+            "XM": f"{self.studentInfo.name}",  # 姓名
+            "MQJZD": f"{self.clockDetails.district}",  # 目前居住地
+            "JZDXXDZ": f"{self.clockDetails.location}",  # 居住地详细地址
             "JZDYQFXDJ": "低风险",  # 居住地风险等级
             "SFYZGFXDQLJS": "无",  # 有无中高风险旅居史
             "SFJCZGFXDQLJSRY": "无",  # 有无接触中高风险地区旅居史人员
             "TWSFZC": "是",  # 体温是否正常
             "SFYGRZZ": "无",  # 是否有症状
-            "TZRYSFYC": f"{self.clock_details['tzrysfyc']}",  # 同住人员情况
+            "TZRYSFYC": f"{self.clockDetails.roommates}",  # 同住人员情况
             "YKMYS": "绿色",  # 渝康码颜色
             "QTSM": "无",  # 其他说明
             "DKSJ": self.__random_time(date).strftime("%Y-%m-%d %H:%M:%S"),  # 打卡具体时间
@@ -188,8 +211,8 @@ class DailyClock:
             "WID": wid,
             'SFTS': "是",  # 是否同省份
             'SFTQX': "是",  # 是否同区县
-            'LONGITUDE': f'{self.__random_titude(self.clock_details["longitude"])}',  # 经度
-            "LATITUDE": f'{self.__random_titude(self.clock_details["latitude"])}',  # 纬度
+            'LONGITUDE': f'{self.__random_titude(self.clockDetails.longitude)}',  # 经度
+            "LATITUDE": f'{self.__random_titude(self.clockDetails.latitude)}',  # 纬度
         }
 
         # 发送打卡请求
@@ -207,9 +230,3 @@ class DailyClock:
         resp.close()
         del resp
         return
-
-
-if __name__ == '__main__':
-    for arg in const.ARGS:
-        daily = DailyClock(**arg)
-        daily.clock_on(date=datetime.datetime.now(), force=False)

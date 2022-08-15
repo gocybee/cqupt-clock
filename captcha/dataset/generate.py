@@ -5,7 +5,7 @@ import time
 from PIL import Image
 from captcha.image import ImageCaptcha
 
-import server.cnn.setting as setting
+import captcha.cnn.setting as setting
 
 
 def random_captcha():
