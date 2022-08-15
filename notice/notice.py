@@ -17,7 +17,7 @@ def check():
     return False
 
 
-def notice(msg):
+def do(msg):
     """
      subject:打卡失败 body: err
      subject:打卡成功 body: 芜湖~~~~~~~~
