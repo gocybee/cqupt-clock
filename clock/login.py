@@ -21,14 +21,15 @@ LOGIN_URL = 'https://ids.cqupt.edu.cn/authserver/login'
 
 
 def login(username, password):
-    chrome_option = webdriver.ChromeOptions()
+    option = webdriver.ChromeOptions()
     current_dir_path = os.getcwd()
-    chrome_option.add_argument(f'user-data-dir={current_dir_path}/clock/cookies')  # 设置用户数据存储位置
-    chrome_option.add_argument('-no-sandbox')  # 让chrome在root权限下跑
-    chrome_option.add_argument('-disable-dev-shm-usage')
-    chrome_option.add_argument('-headless')  # 不用打开图形界面
+    option.add_argument(f'user-data-dir={current_dir_path}/clock/cookies')  # 设置用户数据存储位置
+    option.add_argument('-no-sandbox')  # 让chrome在root权限下跑
+    option.add_argument('-disable-dev-shm-usage')
+    option.add_argument('-headless')  # 不用打开图形界面
+    option.add_argument('-disable-cookie-encryption')  # 取消cookie加密
 
-    browser = webdriver.Chrome(chrome_options=chrome_option)
+    browser = webdriver.Chrome(chrome_options=option)
 
     # browser.maximize_window()
     # 打开页面
@@ -38,6 +39,7 @@ def login(username, password):
     login_count = 0
     while 1:
         login_count = login_count + 1
+        print(f'正在尝试第{login_count}次登录')
         # 输入账号和密码
         browser.find_element(By.ID, 'username').clear()
         browser.find_element(By.ID, 'username').send_keys(username)
@@ -74,6 +76,7 @@ def login(username, password):
         这样可以避免识别验证码出错的情况
         '''
         if "accountsecurity" in browser.current_url:
+            print('登录成功')
             return True
 
         '''
@@ -81,4 +84,5 @@ def login(username, password):
         防止账号被冻结
         '''
         if login_count == 5:
+            print('登录失败')
             return False
