@@ -119,7 +119,7 @@ class DailyClock:
     def clock_history_on(self, date=None, sfdk=None, pageSize=None, pageNum=None):
         """
         查询打卡历史信息
-        rq: 字符串(例如 2022-08-10 )，会覆盖 today，锁定某一天的历史
+        date: 字符串(例如 2022-08-10 )，会覆盖 today，锁定某一天的历史
         sfdk: 是/否/None，限制是否打卡的记录
         pageSize: 限制打卡记录页大小
         pageNum: 限制打卡记录页数目
@@ -191,10 +191,10 @@ class DailyClock:
 
     def clock_on(
             self,
-            clock_date: datetime.datetime,
+            clock_time: datetime.datetime,
             force=False
     ):
-        clock_date = clock_date.strftime('%Y-%m-%d')
+        clock_date = clock_time.strftime('%Y-%m-%d')
         wid = self.get_wid_on(date=clock_date)
         print(f'正在{"准备" if not force else "强制"}给 {self.studentInfo.name} {self.studentInfo.id} 自动打卡...')
         if self.check_date(date=clock_date) and (not force):  # 已经打卡了就不打了
@@ -216,8 +216,8 @@ class DailyClock:
             "TZRYSFYC": f"{self.clockDetails.roommates}",  # 同住人员情况
             "YKMYS": "绿色",  # 渝康码颜色
             "QTSM": "无",  # 其他说明
-            "DKSJ": self.__random_time(clock_date).strftime("%Y-%m-%d %H:%M:%S"),  # 打卡具体时间
-            "RQ": self.__random_time(clock_date).strftime("%Y-%m-%d"),  # 打卡日期
+            "DKSJ": self.__random_time(clock_time).strftime("%Y-%m-%d %H:%M:%S"),  # 打卡具体时间
+            "RQ": clock_date,  # 打卡日期
             "SFYC": "否",
             "SFDK": "是",
             "WID": wid,
