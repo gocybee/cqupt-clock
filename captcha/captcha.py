@@ -33,8 +33,9 @@ def get_captcha_img(timestamp, session_id, route):
     img_response = s.get(url='https://ids.cqupt.edu.cn/authserver/getCaptcha.htl?' + timestamp,
                          headers=headers)
     img_response.close()
+    if not img_response.ok:
+        raise ConnectionError
     image = Image.open(BytesIO(img_response.content))
-
     # plt.imshow(image)
     # plt.show()
     return image

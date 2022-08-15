@@ -31,7 +31,17 @@ def captcha():
         }
         return jsonify(res), 401
     # 通过时间戳和session_id获取对应的captcha
-    img = c.get_captcha_img(timestamp, session_id, route)
+    try:
+        img = c.get_captcha_img(timestamp, session_id, route)
+    except ConnectionError:
+        print('获取验证码图片失败')
+        res = {
+            "code": "500",
+            "ok": "false",
+            "data": "",
+            "msg": "获取验证码失败,没有获取到验证码图片"
+        }
+        return jsonify(res), 500
     # 获取对应captcha的answer
     answer = c.get_captcha_answer(img)
     print(f'获取到验证码答案:{answer}')
