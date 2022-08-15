@@ -24,5 +24,10 @@ def captcha():
     return jsonify(res)
 
 
+@app.route('/do',methods=['post'])
+def do():
+    print(1)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8089, debug=True)

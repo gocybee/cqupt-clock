@@ -1,3 +1,6 @@
+import http.cookiejar
+import urllib.request
+
 import requests
 import json
 import datetime
@@ -10,22 +13,21 @@ import cookie
 class DailyClock:
 
     def __init__(self, **kargs):
-        """
-        kargs:
-            castgc: CASTGC cookie
-            name: 你的姓名
-            stu_id: 你的学号
-        """
-        self.cookies = const.Cookies.copy()
-        self.cookies['CASTGC'] = cookie.get('CASTGC')
-        self.cookies['JSESSIONID'] = cookie.get('JSESSIONID')
-        self.cookies['route'] = cookie.get('route')
+        # 初始化账号信息
         self.username = kargs['username']
         self.password = kargs['password']
+
+        self.cookies = const.Cookies.copy()
+
         self.headers = const.Headers.copy()
         self.role_id = -1
         self.name = kargs['name']
         self.stu_id = kargs['stu_id']
+
+        # 初始化打卡信息
+        self.clock_details = {'mqjzd': kargs['district'], 'jzdxxdz': kargs['location'], 'tzrysfyc': kargs['roommates'],
+                              'longitude': kargs['longitude'], 'latitude': kargs['latitude']}
+
         # 今天的数据是否同步
         self.sync = True
         self.__prepare()
@@ -33,17 +35,26 @@ class DailyClock:
 
     def __prepare(self):
         """
-        准备 _WEU, MOD_AUTH_CAS
+        准备 认证cookie
         """
-        login(self.username, self.password)
-        print(self.cookies.get('CASTGC'))
-        resp = requests.get(
-            url=const.GET_STU_ID,
-            headers=self.headers,
-            cookies={'CASTGC': self.cookies.get('CASTGC')}
-        )
+
+        # 自动登录获取'CASTGC'等cookie
+        if not login(self.username, self.password):
+            raise BaseException('登录失败')
+
+        s = requests.session()
+        s.cookies.set_cookie(cookie=cookie.get('CASTGC'))
+        s.cookies.set_cookie(cookie=cookie.get('JSESSIONID'))
+        s.cookies.set_cookie(cookie=cookie.get('route'))
+
+        # 根据'CASTGC'cookie获取'_WEU','MOD_AUTH_CAS'等cookie
+        resp = s.request(method='GET',
+                         url=const.GET_STU_ID,
+                         headers=self.headers,
+                         )
         if resp.status_code != 200 or resp.headers['Content-Type'].__contains__('text/html'):
             raise BaseException('获取中间 cookie 失败')
+
         self.cookies['_WEU'] = resp.cookies['_WEU']
         # 第三次重定向会设置 MOD_AUTH_CAS
         self.cookies['MOD_AUTH_CAS'] = resp.history[2].cookies['MOD_AUTH_CAS']
@@ -68,6 +79,9 @@ class DailyClock:
         del resp
 
     def clock_history(self, today=False, sfdk=None, pageSize=None, pageNum=None):
+        """
+        查询打卡历史信息
+        """
         __data = {}
         if today:
             __data['RQ'] = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -114,8 +128,8 @@ class DailyClock:
         now += datetime.timedelta(hours=random.choice((-2, -1, 0, 1, 2)))  # [-2, 2]
         now += datetime.timedelta(minutes=random.choice((1, -1)) * random.choice(range(60)))
         now += datetime.timedelta(seconds=random.choice((1, -1)) * random.choice(range(60)))
-        if now.weekday() != datetime.datetime.now().weekday():
-            return self.__random_time()
+        # if now.weekday() != datetime.datetime.now().weekday():
+        #     return self.__random_time()
         return now
 
     # def get_stu_info(self):
@@ -152,11 +166,6 @@ class DailyClock:
 
     def clock(
             self,
-            mqjzd="重庆市,重庆市,南岸区",
-            jzdxxdz="重庆邮电大学 宁静6",
-            tzrysfyc="无同住人员",
-            longitude=106.602482,  # 经度 (重庆)
-            latitude=29.537199,  # 纬度 (重庆)
             force=False
     ):
         print(f'正在{"准备" if not force else "强制"}给 {self.name} {self.stu_id} 自动打卡...')
@@ -169,26 +178,28 @@ class DailyClock:
         __data = {
             'XH': f"{self.stu_id}",  # 学号
             "XM": f"{self.name}",  # 姓名
-            "MQJZD": f"{mqjzd}",
-            "JZDXXDZ": f"{jzdxxdz}",
-            "JZDYQFXDJ": "低风险",
-            "SFYZGFXDQLJS": "无",
-            "SFJCZGFXDQLJSRY": "无",
-            "TWSFZC": "是",
-            "SFYGRZZ": "无",
-            "TZRYSFYC": f"{tzrysfyc}",
-            "YKMYS": "绿色",
-            "QTSM": "无",
-            "DKSJ": self.__random_time().strftime("%Y-%m-%d %H:%M:%S"),
-            "RQ": self.__random_time().strftime("%Y-%m-%d"),
+            "MQJZD": f"{self.clock_details['mqjzd']}",  # 目前居住地
+            "JZDXXDZ": f"{self.clock_details['jzdxxdz']}",  # 居住地详细地址
+            "JZDYQFXDJ": "低风险",  # 居住地风险等级
+            "SFYZGFXDQLJS": "无",  # 有无中高风险旅居史
+            "SFJCZGFXDQLJSRY": "无",  # 有无接触中高风险地区旅居史人员
+            "TWSFZC": "是",  # 体温是否正常
+            "SFYGRZZ": "无",  # 是否有症状
+            "TZRYSFYC": f"{self.clock_details['tzrysfyc']}",  # 同住人员情况
+            "YKMYS": "绿色",  # 渝康码颜色
+            "QTSM": "无",  # 其他说明
+            "DKSJ": self.__random_time().strftime("%Y-%m-%d %H:%M:%S"),  # 打卡具体时间
+            "RQ": self.__random_time().strftime("%Y-%m-%d"),  # 打卡日期
             "SFYC": "否",
             "SFDK": "是",
             "WID": self.get_wid(),
             'SFTS': "是",  # 是否同省份
             'SFTQX': "是",  # 是否同区县
-            'LONGITUDE': f'{self.__random_titude(longitude)}',  # 经度 (重庆)
-            "LATITUDE": f'{self.__random_titude(latitude)}',  # 纬度 (重庆)
+            'LONGITUDE': f'{self.__random_titude(self.clock_details["longitude"])}',  # 经度 (重庆)
+            "LATITUDE": f'{self.__random_titude(self.clock_details["latitude"])}',  # 纬度 (重庆)
         }
+
+        # 发送打卡请求
         resp = requests.post(
             url=const.SUBMIT_FORM,
             headers=self.headers,
@@ -208,4 +219,4 @@ class DailyClock:
 if __name__ == '__main__':
     for arg in const.ARGS:
         daily = DailyClock(**arg)
-        daily.clock('''force=True''')
+        daily.clock(force=True)

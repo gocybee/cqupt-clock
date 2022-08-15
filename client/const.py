@@ -1,16 +1,6 @@
 import datetime
 
-## 注意：请确保已经过凌晨三点打卡程序才可以启动，不然可能会打错卡
-
-#####  CASTGC Cookies 列表，填入需要自动打卡的同学的 CASTGC Cookie
-
-# 获取 CASTGC Cookie 的办法：
-# 打开 https://ids.cqupt.edu.cn/authserver/login
-# 然后选择 “7天内免登录”，登录你的账户，最后在跳转到的网站那查看 cookies，
-# 就会有一个叫 CASTGC 的 cookie
-# 如果打开上面的网站直接跳转到登录好的页面的话，那你之前可能选过 7天内免登录，
-# 可以删除所有 Cookie 后重新获取一个新的 CASTGC
-
+# 注意：请确保已经过凌晨三点打卡程序才可以启动，不然可能会打错卡
 
 ARGS = [
     {
@@ -18,6 +8,11 @@ ARGS = [
         'stu_id': '',  # 填写你的学号
         'username': '',  # 填写你的统一认证码
         'password': '',  # 填写你的密码
+        'district': '重庆市,重庆市,南岸区',  # 填写你的地区,例如:'重庆市,重庆市,南岸区'
+        'location': '重庆邮电大学 宁静6',  # 填写你的具体地点,例如:'重庆邮电大学 宁静6'
+        'roommates': '无',  # 填写同住人员信息,选项: '是','无','无同住人员'
+        'longitude': 106.608634,  # 填写你的经纬度,例如:'106.608634'
+        'latitude': 29.528421,  # 填写你的维度,例如:'29.528421'
     }
 ]
 #####
@@ -41,8 +36,8 @@ Cookies = {
     'MOD_AUTH_CAS': '',
     # 不重要的
     '.ASPXAUTH1': '9861B91FC0EC40660E17267C20AE9B8ABC75FDD77F61EC63D504D2D06E486C43CBBDDEB0140F01CA125F9149E5A12FA157BADE827DEE1F36F9A7234EE139E421FA1C3C6D5582E36AD8B5D9505CC80BB04378FA2BA97D69E1485BD95653E47A9BEA909BB03466AE39889063E35BEC7D38C368A3607A0BA3E230C9D525644CCA350255603848C3C4BC5B0AC6BF158953E51D0FF11992BEE3D48504A8913E4F73B4BE9D8073ABD12E311EB0EB40D1921A5FFAD1E2A17672E4D02E5C4478A6B2017B',
-    'JSESSIONID': 'bBfMPifgXVKYxpL3oSIARqtnZ0FYJ4ftsIzCxMu5NkCybmeKCMrV?-64737101',
-    'route': '25636182ad6de114514f3ee1a23d8ec8',
+    'JSESSIONID': '',
+    'route': '',
     'client_vpn_ticket': 'qUQXOxv22:694a32-ab88-840e8a1av9b2',
 }
 
@@ -58,9 +53,9 @@ SUBMIT_FORM = HOST + '/sys/cyxsjkdk/modules/yddjk/T_XSJKDK_XSTBXX_SAVE.do'
 QUERY_LIST = HOST + '/sys/cyxsjkdk/modules/yddjk/T_XSJKDK_XSTBXX_QUERY.do'
 
 
-class QUERY_LIMIT:
+class QueryList:
     @classmethod
-    def DAY_OF(clz, day, append=None):
+    def day_of(cls, day, append=None):
         if isinstance(day, datetime.datetime):
             day = day.strftime('%Y-%m-%d')
         if append is not None:
@@ -69,19 +64,19 @@ class QUERY_LIMIT:
         return {'RQ': day}
 
     @classmethod
-    def SFDK(clz, boolean, append=None):
+    def sfdk(cls, boolean, append=None):
         if append is not None:
             append['SFDK'] = '是' if boolean else '否'
             return append
         return {'SFDK': '是' if boolean else '否'}
 
     @classmethod
-    def PAGE_LIMIT(size, num, append=None):
+    def page_limit(cls, num, append=None):
         if append is not None:
-            append['pageSize'] = size
+            append['pageSize'] = cls
             append['pageNumber'] = num
             return append
-        return {'pageSize': size, 'pageNumber': num}
+        return {'pageSize': cls, 'pageNumber': num}
 
 
 # GET 获取学生的 ID
