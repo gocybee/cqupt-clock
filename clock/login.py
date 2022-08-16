@@ -82,6 +82,7 @@ def login(username, password):
         '''
         if "accountsecurity" in browser.current_url:
             print('登录成功')
+            return
 
         '''
         如果登录五次还没有登录成功,则停止登录
