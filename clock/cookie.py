@@ -12,23 +12,5 @@ def get(name):
     )
     return cj.__dict__.get('_cookies')['ids.cqupt.edu.cn']['/authserver'][name]
 
-
-def check(name):
-    # 检查cookie是否存在
-    if not os.path.exists('./clock/cookies/Default/Cookies'):
-        return False
-
-    cj = browser_cookie3.chrome(
-        cookie_file='./clock/cookies/Default/Cookies',
-        domain_name='ids.cqupt.edu.cn',
-    )
-
-    c = cj.__dict__.get('_cookies')['ids.cqupt.edu.cn']['/authserver'][name]
-    # cookie没有过期
-    if datetime.datetime.now().timestamp() < c.expires:
-        return True
-    # cookie过期了
-    return False
-
 # if __name__ == "__main__":
 #     print(check('CASTGC'))

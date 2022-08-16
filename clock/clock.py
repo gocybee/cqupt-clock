@@ -67,13 +67,12 @@ class DailyClock:
 
         # 自动登录获取'CASTGC'等cookie
         print(r'获取 "CASTGC" cookie...')
-        if not cookie.check('CASTGC'):  # 检查"CASTGC"cookie是否存在,且是否过期
-            print('登录中...')
-            try:
-                login(self.studentInfo.username, self.studentInfo.password)
-            except const.LOGIN_ERR:
-                print('登录失败')
-                raise const.LOGIN_ERR
+        print('登录中...')
+        try:
+            login(self.studentInfo.username, self.studentInfo.password)
+        except const.LOGIN_ERR:
+            print('登录失败')
+            raise const.LOGIN_ERR
 
         # 获取中间cookie
         print('获取中间cookie...')
@@ -198,11 +197,9 @@ class DailyClock:
         wid = self.get_wid_on(date=clock_date)
         print(f'正在{"准备" if not force else "强制"}给 {self.studentInfo.name} {self.studentInfo.id} 自动打卡...')
         if self.check_date(date=clock_date) and (not force):  # 已经打卡了就不打了
-            print(f'{clock_date} 已经打卡了')
-            return
+            raise const.ALREADY_CLOCK_ERR
         if not self.sync:
-            print(f'{clock_date} 数据还未同步，暂时打不了卡')
-            return
+            raise const.DATA_NOT_SYNC_ERR
         __data = {
             'XH': f"{self.studentInfo.id}",  # 学号
             "XM": f"{self.studentInfo.name}",  # 姓名
