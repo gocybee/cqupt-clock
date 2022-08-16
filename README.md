@@ -11,7 +11,5 @@ docker run -it \
 -v /www/wwwroot/jwzx.stellaris.wang:/workspace \ # 改一下项目代码文件放的位置
 -e EMAIL_ACCOUNT="" \ # 设置邮箱账号
 -e EMAIL_PASSWORD="" \ # 设置邮箱授权码
---entrypoint=/bin/bash \
-cqupt-clock \
-python main.py
+cqupt-clock
 ```
