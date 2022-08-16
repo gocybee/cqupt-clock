@@ -5,6 +5,8 @@ LOGIN_ERR = RuntimeError('login failed')
 GET_MIDDLE_COOKIE_ERR = RuntimeError('get middle cookie failed')
 UPDATE_WEU_ERR = RuntimeError('update "_weu" cookie failed')
 GET_CLOCK_HISTORY_ERR = RuntimeError('get clock history failed')
+ALREADY_CLOCK_ERR = RuntimeError('already clocked')
+DATA_NOT_SYNC_ERR = RuntimeError('data not sync')
 
 # 伪造请求头
 Headers = {
