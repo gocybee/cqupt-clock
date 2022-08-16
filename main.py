@@ -76,7 +76,7 @@ def do():
         res = {
             "code": "401",
             "ok": "false",
-            "msg": f'参数{err.args[0]}没有填写'
+            "msg": f'参数"{err.args[0]}"没有填写'
         }
     except const.LOGIN_ERR:
         res = {
@@ -104,7 +104,11 @@ def do():
         }
     else:
         print('获取cookie成功')
-        clock.clock_on(clock_date=datetime.datetime.now(), force=False)
+        if bool(req['is_today']):
+            clock.clock_on(clock_time=datetime.datetime.now(), force=bool(req['is_force']))
+        else:
+            clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
+                           force=bool(req['is_force']))
         res = {
             "code": "200",
             "ok": "true",
@@ -119,4 +123,4 @@ def do():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8089, debug=True)
+    app.run(host='0.0.0.0', port=8089, debug=False)

@@ -116,7 +116,7 @@ class DailyClock:
         resp.close()
         del resp
 
-    def clock_history_on(self, date=None, sfdk=None, pageSize=None, pageNum=None):
+    def clock_history_on(self, date=None, sfdk=None, page_size=None, page_num=None):
         """
         查询打卡历史信息
         date: 字符串(例如 2022-08-10 )，会覆盖 today，锁定某一天的历史
@@ -129,10 +129,10 @@ class DailyClock:
             __data['RQ'] = date
         if sfdk is not None:
             __data['SFDK'] = sfdk
-        if pageSize is not None:
-            __data['pageSize'] = pageSize
-        if pageNum is not None:
-            __data['pageNumber'] = pageNum
+        if page_size is not None:
+            __data['pageSize'] = page_size
+        if page_num is not None:
+            __data['pageNumber'] = page_num
 
         resp = requests.post(
             url=const.QUERY_LIST,
@@ -171,7 +171,7 @@ class DailyClock:
         """
         now = pivot
         # now += datetime.timedelta(hours=random.choice((-2, -1, 0, 1, 2)))  # [-2, 2]
-        now += datetime.timedelta(minutes=random.choice(range(30)))
+        now += datetime.timedelta(minutes=random.choice(range(5)))
         now += datetime.timedelta(seconds=random.choice(range(60)))
         # if now.weekday() != datetime.datetime.now().weekday():
         #     return self.__random_time()
