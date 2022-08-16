@@ -108,19 +108,33 @@ def do():
         }
     else:
         print('获取cookie成功')
-        if strtobool(req['is_today']):
-            clock.clock_on(clock_time=datetime.datetime.now(), force=strtobool(req['is_force']))
+        try:
+            if strtobool(req['is_today']):
+                clock.clock_on(clock_time=datetime.datetime.now(), force=strtobool(req['is_force']))
+            else:
+                clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
+                               force=strtobool(req['is_force']))
+        except const.ALREADY_CLOCK_ERR:
+            res = {
+                "code": "401",
+                "ok": "false",
+                "msg": "已经打过卡了"
+            }
+        except const.DATA_NOT_SYNC_ERR:
+            res = {
+                "code": "401",
+                "ok": "false",
+                "msg": "数据还未同步，暂时打不了卡"
+            }
         else:
-            clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
-                           force=strtobool(req['is_force']))
-        res = {
-            "code": "200",
-            "ok": "true",
-            "msg": "打卡成功"
-        }
+            res = {
+                "code": "200",
+                "ok": "true",
+                "msg": "打卡成功"
+            }
         if notice.check():
             notice.do(res['msg'])
-        return jsonify(res), 200
+        return jsonify(res), int(res['code'])
     if notice.check():
         notice.do(res['msg'])
     return jsonify(res), 401

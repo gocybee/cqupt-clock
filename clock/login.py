@@ -41,6 +41,13 @@ def login(username, password):
     browser.get(LOGIN_URL)
     # 隐式等待10秒(等待加载完页面再执行后续操作)
     browser.implicitly_wait(10)
+
+    time.sleep(3)
+
+    if "accountsecurity" in browser.current_url:
+        print('使用之前的"CASTGC"cookie')
+        return
+
     login_count = 0
     while 1:
         login_count = login_count + 1
@@ -73,7 +80,6 @@ def login(username, password):
         browser.find_element(By.ID, 'rememberMe').click()
         # 点击按钮"登录"
         browser.find_element(By.ID, 'login_submit').click()
-        time.sleep(5)
 
         '''
         如果登录成功则跳出循环
