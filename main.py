@@ -69,6 +69,9 @@ def do():
         "roommates": "",   填写同住人员是否异常,选项: "是","无","无同住人员"
         "longitude": "",   填写你的经度,例如: 106.608634
         "latitude": "",    填写你的维度,例如: 29.528421
+        "is_force": "",    是否强制打卡(会覆盖之前的打卡记录),选项:"True","False"
+        "is_today": "",    是否给今天打卡,选项:"True","False"
+        "clock_time" "",   给指定日期打卡,格式:"%Y-%m-%d %H:%M:%S"(只有当"is_today"选项为"false"时该选项才填写)
     """
     req = request.form.to_dict()
     try:
