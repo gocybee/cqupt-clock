@@ -32,7 +32,7 @@ cqupt-clock
 "latitude": "",    填写你的维度,例如: 29.528421
 "is_force": "",    是否强制打卡(会覆盖之前的打卡记录),选项:"True","False"
 "is_today": "",    是否给今天打卡,选项:"True","False"
-"clock_time" "",   给指定日期打卡,格式:"%Y-%m-%d %H:%M:%S"(只有当"is_today"选项为"false"时该选项才填写)
+"clock_time": "",  给指定日期打卡,格式:"%Y-%m-%d %H:%M:%S"(只有当"is_today"选项为"false"时该选项才填写)
 ```
 
 ### "/captcha","get","query"
