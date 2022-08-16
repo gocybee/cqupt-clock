@@ -6,6 +6,7 @@ from captcha import captcha as c
 from clock import const as const
 from clock.clock import DailyClock as Clock
 from notice import notice
+from distutils.util import strtobool
 
 app = Flask('jwzx')
 
@@ -104,11 +105,11 @@ def do():
         }
     else:
         print('获取cookie成功')
-        if bool(req['is_today']):
-            clock.clock_on(clock_time=datetime.datetime.now(), force=bool(req['is_force']))
+        if strtobool(req['is_today']):
+            clock.clock_on(clock_time=datetime.datetime.now(), force=strtobool(req['is_force']))
         else:
             clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
-                           force=bool(req['is_force']))
+                           force=strtobool(req['is_force']))
         res = {
             "code": "200",
             "ok": "true",
