@@ -5,7 +5,6 @@ from distutils.util import strtobool
 from flask import Flask, request, jsonify
 
 from captcha import captcha as c
-from clock import const as const
 from clock.clock import DailyClock as Clock
 from notice import notice
 
@@ -101,29 +100,11 @@ def do():
             "ok": "false",
             "msg": f'参数"{err.args[0]}"没有填写'
         }
-    except const.LOGIN_ERR:
+    except RuntimeError as err:
         res = {
             "code": "401",
             "ok": "false",
-            "msg": "登录失败"
-        }
-    except const.GET_MIDDLE_COOKIE_ERR:
-        res = {
-            "code": "401",
-            "ok": "false",
-            "msg": "获取中间cookie失败"
-        }
-    except const.UPDATE_WEU_ERR:
-        res = {
-            "code": "401",
-            "ok": "false",
-            "msg": r'更新 "_WEU" cookie失败'
-        }
-    except const.GET_CLOCK_HISTORY_ERR:
-        res = {
-            "code": "401",
-            "ok": "false",
-            "msg": "获取打卡历史失败"
+            "msg": f'{err.args[0]}'
         }
     else:
         logger.info('获取cookie成功')
@@ -133,17 +114,11 @@ def do():
             else:
                 clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
                                force=strtobool(req['is_force']))
-        except const.ALREADY_CLOCK_ERR:
+        except RuntimeError as err:
             res = {
                 "code": "401",
                 "ok": "false",
-                "msg": "已经打过卡了"
-            }
-        except const.DATA_NOT_SYNC_ERR:
-            res = {
-                "code": "401",
-                "ok": "false",
-                "msg": "数据还未同步，暂时打不了卡"
+                "msg": f'{err.args[0]}'
             }
         else:
             res = {
