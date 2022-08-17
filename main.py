@@ -1,4 +1,6 @@
 import datetime
+import logging
+from distutils.util import strtobool
 
 from flask import Flask, request, jsonify
 
@@ -6,7 +8,23 @@ from captcha import captcha as c
 from clock import const as const
 from clock.clock import DailyClock as Clock
 from notice import notice
-from distutils.util import strtobool
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+logfile = './log.txt'
+fh = logging.FileHandler(logfile, mode='a')
+fh.setLevel(logging.DEBUG)
+
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+
+logger.addHandler(fh)
+logger.addHandler(ch)
 
 app = Flask('jwzx')
 
@@ -25,6 +43,7 @@ def captcha():
         session_id = req['session_id']
         route = req['route']
     except KeyError as err:
+        logger.error(f'获取验证码失败,参数{err.args[0]}没有填写')
         res = {
             "code": "401",
             "ok": "false",
@@ -36,7 +55,7 @@ def captcha():
     try:
         img = c.get_captcha_img(timestamp, session_id, route)
     except ConnectionError:
-        print('获取验证码图片失败')
+        logger.error('获取验证码图片失败')
         res = {
             "code": "500",
             "ok": "false",
@@ -46,7 +65,7 @@ def captcha():
         return jsonify(res), 500
     # 获取对应captcha的answer
     answer = c.get_captcha_answer(img)
-    print(f'获取到验证码答案:{answer}')
+    logger.info(f'获取到验证码答案:{answer}')
     res = {
         "code": "200",
         "ok": "true",
@@ -107,7 +126,7 @@ def do():
             "msg": "获取打卡历史失败"
         }
     else:
-        print('获取cookie成功')
+        logger.info('获取cookie成功')
         try:
             if strtobool(req['is_today']):
                 clock.clock_on(clock_time=datetime.datetime.now(), force=strtobool(req['is_force']))
@@ -137,6 +156,7 @@ def do():
         return jsonify(res), int(res['code'])
     if notice.check():
         notice.do(res['msg'])
+    logger.info('打卡成功')
     return jsonify(res), 401
 
 

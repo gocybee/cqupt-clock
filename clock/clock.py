@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 import random
 
 import requests
@@ -9,9 +10,7 @@ from clock import cookie
 from clock.login import login
 
 
-def get():
-    print(1)
-
+logger = logging.getLogger()
 
 class DailyClock:
 
@@ -24,7 +23,7 @@ class DailyClock:
                 self.username = username
                 self.password = password
 
-        print('初始化个人信息...')
+        logger.info('初始化个人信息...')
         self.studentInfo = StudentInfo(
             name=args['name'],
             stu_id=args['stu_id'],
@@ -41,7 +40,7 @@ class DailyClock:
                 self.longitude = longitude
                 self.latitude = latitude
 
-        print('初始化打卡信息...')
+        logger.info('初始化打卡信息...')
         self.clockDetails = ClockDetails(
             district=args['district'],
             location=args['location'],
@@ -66,25 +65,29 @@ class DailyClock:
         """
 
         # 自动登录获取'CASTGC'等cookie
-        print(r'获取 "CASTGC" cookie...')
-        print('登录中...')
+        logger.info(r'获取 "CASTGC" cookie...')
+        logger.info('登录中...')
         try:
             login(self.studentInfo.username, self.studentInfo.password)
         except const.LOGIN_ERR:
-            print('登录失败')
+            logger.error('登录失败')
             raise const.LOGIN_ERR
 
         # 获取中间cookie
-        print('获取中间cookie...')
+        logger.info('获取中间cookie...')
         s = requests.session()
         s.cookies.set_cookie(cookie=cookie.get('CASTGC'))
 
         # 根据'CASTGC'cookie获取'_WEU','MOD_AUTH_CAS'等cookie
-        resp = s.request(method='GET',
-                         url=const.GET_STU_ID,
-                         headers=self.headers)
-        if resp.status_code != 200 or resp.headers['Content-Type'].__contains__('text/html'):
-            print('获取中间cookie失败')
+        try:
+            resp = s.request(method='GET',
+                             url=const.GET_STU_ID,
+                             headers=self.headers)
+            if resp.status_code != 200 or resp.headers['Content-Type'].__contains__('text/html'):
+                logger.error('获取中间cookie失败')
+                raise const.GET_MIDDLE_COOKIE_ERR
+        except BaseException:
+            logger.error('获取中间cookie失败')
             raise const.GET_MIDDLE_COOKIE_ERR
 
         self.cookies['_WEU'] = resp.cookies['_WEU']
@@ -101,7 +104,7 @@ class DailyClock:
         """
         刷新 _WEU
         """
-        print(r'刷新 "_WEU" cookie...')
+        logger.info(r'刷新 "_WEU" cookie...')
         refresh_weu = const.REFRESH_WEU_ + self.roleId + '.do'
         resp = requests.get(
             url=refresh_weu,
@@ -109,7 +112,7 @@ class DailyClock:
             cookies=self.cookies,
         )
         if resp.status_code != 200 or json.loads(resp.text)['success'] != True:
-            print(r'刷新 "_WEU" cookie失败')
+            logger.info(r'刷新 "_WEU" cookie...')
             raise const.UPDATE_WEU_ERR
         self.cookies['_WEU'] = resp.cookies['_WEU']
         resp.close()
@@ -195,7 +198,7 @@ class DailyClock:
     ):
         clock_date = clock_time.strftime('%Y-%m-%d')
         wid = self.get_wid_on(date=clock_date)
-        print(f'正在{"准备" if not force else "强制"}给 {self.studentInfo.name} {self.studentInfo.id} 自动打卡...')
+        logger.info(f'正在{"准备" if not force else "强制"}给 {self.studentInfo.name} {self.studentInfo.id} 自动打卡...')
         if self.check_date(date=clock_date) and (not force):  # 已经打卡了就不打了
             raise const.ALREADY_CLOCK_ERR
         if not self.sync:
@@ -232,10 +235,10 @@ class DailyClock:
             data=__data
         )
         if resp.status_code == 200 and json.loads(resp.text)['code'] == '0':
-            print(f'打卡成功，当前时间 {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
-            print(f'打卡时间：{__data["DKSJ"]}，打卡经纬度 {__data["LONGITUDE"]} : {__data["LATITUDE"]}')
+            logger.info(f'打卡成功，当前时间 {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+            logger.info(f'打卡时间：{__data["DKSJ"]}，打卡经纬度 {__data["LONGITUDE"]} : {__data["LATITUDE"]}')
         else:
-            print(f'打卡失败，当前时间 {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}，返回 {resp.text}')
+            logger.error(f'打卡失败，当前时间 {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}，返回 {resp.text}')
         resp.close()
         del resp
         return

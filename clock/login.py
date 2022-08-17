@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 import time
 
@@ -20,7 +21,7 @@ class By(object):
     CLASS_NAME = "class name"
     CSS_SELECTOR = "css selector"
 
-
+logger = logging.getLogger()
 
 LOGIN_URL = 'https://ids.cqupt.edu.cn/authserver/login'
 
@@ -45,13 +46,14 @@ def login(username, password):
     time.sleep(3)
 
     if "accountsecurity" in browser.current_url:
-        print('使用之前的"CASTGC"cookie')
+        logger.info('使用之前的"CASTGC"cookie')
+        browser.close()
         return
 
     login_count = 0
     while 1:
         login_count = login_count + 1
-        print(f'正在尝试第{login_count}次登录')
+        logger.info(f'正在尝试第{login_count}次登录')
         # 输入账号和密码
         browser.find_element(By.ID, 'username').clear()
         browser.find_element(By.ID, 'username').send_keys(username)
@@ -87,7 +89,8 @@ def login(username, password):
         这样可以避免识别验证码出错的情况
         '''
         if "accountsecurity" in browser.current_url:
-            print('登录成功')
+            logger.info('登录成功')
+            browser.close()
             return
 
         '''
@@ -95,5 +98,6 @@ def login(username, password):
         防止账号被冻结
         '''
         if login_count == 5:
-            print('登录失败')
+            logger.error('登录失败')
+            browser.close()
             raise const.LOGIN_ERR
