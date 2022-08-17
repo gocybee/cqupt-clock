@@ -1,12 +1,12 @@
 import datetime
 
 # 定义错误类型
-LOGIN_ERR = RuntimeError('login failed')
-GET_MIDDLE_COOKIE_ERR = RuntimeError('get middle cookie failed')
-UPDATE_WEU_ERR = RuntimeError('update "_weu" cookie failed')
-GET_CLOCK_HISTORY_ERR = RuntimeError('get clock history failed')
-ALREADY_CLOCK_ERR = RuntimeError('already clocked')
-DATA_NOT_SYNC_ERR = RuntimeError('data not sync')
+LOGIN_ERR = RuntimeError('登录失败')
+GET_MIDDLE_COOKIE_ERR = RuntimeError('获取中间cookie失败')
+UPDATE_WEU_ERR = RuntimeError('更新 "_weu" cookie 失败')
+GET_CLOCK_HISTORY_ERR = RuntimeError('获取打卡历史失败')
+ALREADY_CLOCK_ERR = RuntimeError('已经打过卡了')
+DATA_NOT_SYNC_ERR = RuntimeError('数据未同步,请过一会再来打卡')
 
 # 伪造请求头
 Headers = {

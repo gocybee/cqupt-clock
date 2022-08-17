@@ -200,8 +200,10 @@ class DailyClock:
         wid = self.get_wid_on(date=clock_date)
         logger.info(f'正在{"准备" if not force else "强制"}给 {self.studentInfo.name} {self.studentInfo.id} 自动打卡...')
         if self.check_date(date=clock_date) and (not force):  # 已经打卡了就不打了
+            logger.error('已经打过卡了')
             raise const.ALREADY_CLOCK_ERR
         if not self.sync:
+            logger.error('打卡数据未同步')
             raise const.DATA_NOT_SYNC_ERR
         __data = {
             'XH': f"{self.studentInfo.id}",  # 学号
