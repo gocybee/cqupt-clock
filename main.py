@@ -100,7 +100,7 @@ def do():
             "ok": "false",
             "msg": f'参数"{err.args[0]}"没有填写'
         }
-    except RuntimeError as err:
+    except BaseException as err:
         res = {
             "code": "401",
             "ok": "false",
@@ -120,7 +120,7 @@ def do():
                 "ok": "false",
                 "msg": f'参数"{err.args[0]}"没有填写'
             }
-        except RuntimeError as err:
+        except BaseException as err:
             res = {
                 "code": "401",
                 "ok": "false",
