@@ -114,6 +114,12 @@ def do():
             else:
                 clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
                                force=strtobool(req['is_force']))
+        except KeyError as err:
+            res = {
+                "code": "401",
+                "ok": "false",
+                "msg": f'参数"{err.args[0]}"没有填写'
+            }
         except RuntimeError as err:
             res = {
                 "code": "401",
