@@ -132,13 +132,13 @@ def do():
                 "ok": "true",
                 "msg": "打卡成功"
             }
+            if notice.check():
+                notice.do(res['msg'])
+                return jsonify(res), int(res['code'])
         if notice.check():
             notice.do(res['msg'])
-        return jsonify(res), int(res['code'])
-    if notice.check():
-        notice.do(res['msg'])
-    logger.info('打卡成功')
-    return jsonify(res), 401
+            logger.info('打卡成功')
+            return jsonify(res), 401
 
 
 if __name__ == '__main__':

@@ -55,6 +55,7 @@ def login(username, password):
         login_count = login_count + 1
         logger.info(f'正在尝试第{login_count}次登录')
         # 输入账号和密码
+        logger.debug(browser.current_url)
         browser.find_element(By.ID, 'username').clear()
         browser.find_element(By.ID, 'username').send_keys(username)
         browser.find_element(By.ID, 'password').clear()
@@ -88,6 +89,7 @@ def login(username, password):
         反之重新登录
         这样可以避免识别验证码出错的情况
         '''
+        time.sleep(3)
         if "accountsecurity" in browser.current_url:
             logger.info('登录成功')
             browser.close()
