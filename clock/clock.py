@@ -69,7 +69,7 @@ class DailyClock:
         logger.info('登录中...')
         try:
             login(self.studentInfo.username, self.studentInfo.password)
-        except const.LOGIN_ERR:
+        except BaseException:
             logger.error('登录失败')
             raise const.LOGIN_ERR
 
