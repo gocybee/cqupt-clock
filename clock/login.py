@@ -45,7 +45,7 @@ def login(username, password):
 
     time.sleep(3)
 
-    if "accountsecurity" in browser.current_url:
+    if "personalInfo" in browser.current_url:
         logger.info('使用之前的"CASTGC"cookie')
         browser.close()
         return
@@ -90,7 +90,7 @@ def login(username, password):
         这样可以避免识别验证码出错的情况
         '''
         time.sleep(3)
-        if "accountsecurity" in browser.current_url:
+        if "personalInfo" in browser.current_url:
             logger.info('登录成功')
             browser.close()
             return
