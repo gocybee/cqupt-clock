@@ -9,8 +9,8 @@ from clock import const as const
 from clock import cookie
 from clock.login import login
 
-
 logger = logging.getLogger()
+
 
 class DailyClock:
 
@@ -213,6 +213,8 @@ class DailyClock:
             "JZDYQFXDJ": "低风险",  # 居住地风险等级
             "SFYZGFXDQLJS": "无",  # 有无中高风险旅居史
             "SFJCZGFXDQLJSRY": "无",  # 有无接触中高风险地区旅居史人员
+            "SZDJSSFYYQFS": "否",  # 七天内居住地是否有疫情发生
+            "JZDSFFXQHLSGKQY": "否",  # 居住地是否风险区或临时管控区域
             "TWSFZC": "是",  # 体温是否正常
             "SFYGRZZ": "无",  # 是否有症状
             "TZRYSFYC": f"{self.clockDetails.roommates}",  # 同住人员情况

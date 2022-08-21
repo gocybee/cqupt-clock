@@ -8,8 +8,6 @@ from selenium import webdriver
 
 from clock import const as const
 
-import notice.notice
-
 
 class By(object):
     ID = "id"
@@ -20,6 +18,7 @@ class By(object):
     TAG_NAME = "tag name"
     CLASS_NAME = "class name"
     CSS_SELECTOR = "css selector"
+
 
 logger = logging.getLogger()
 
