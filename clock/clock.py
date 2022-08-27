@@ -33,10 +33,20 @@ class DailyClock:
 
         # 初始化打卡信息
         class ClockDetails:
-            def __init__(self, district, location, roommates, longitude, latitude):
+            def __init__(self, district, location, risk_level, risk_history,
+                         contact_history, prefecture_history, is_risk, is_normal_temp,
+                         has_symptom, roommates, code_color, longitude, latitude):
                 self.district = district
                 self.location = location
+                self.risk_level = risk_level
+                self.risk_history = risk_history
+                self.contact_history = contact_history
+                self.prefecture_history = prefecture_history
+                self.is_risk = is_risk
+                self.is_normal_temp = is_normal_temp
+                self.has_symptom = has_symptom
                 self.roommates = roommates
+                self.code_color = code_color
                 self.longitude = longitude
                 self.latitude = latitude
 
@@ -44,7 +54,15 @@ class DailyClock:
         self.clockDetails = ClockDetails(
             district=args['district'],
             location=args['location'],
+            risk_level=args['risk_level'],
+            risk_history=args['risk_history'],
+            contact_history=args['contact_history'],
+            prefecture_history=args['prefecture_history'],
+            is_risk=args['is_risk'],
+            is_normal_temp=args['is_normal_temp'],
+            has_symptom=args['has_symptom'],
             roommates=args['roommates'],
+            code_color=args['code_color'],
             longitude=args['longitude'],
             latitude=args['latitude'],
         )
@@ -210,15 +228,15 @@ class DailyClock:
             "XM": f"{self.studentInfo.name}",  # 姓名
             "MQJZD": f"{self.clockDetails.district}",  # 目前居住地
             "JZDXXDZ": f"{self.clockDetails.location}",  # 居住地详细地址
-            "JZDYQFXDJ": "低风险",  # 居住地风险等级
-            "SFYZGFXDQLJS": "无",  # 有无中高风险旅居史
-            "SFJCZGFXDQLJSRY": "无",  # 有无接触中高风险地区旅居史人员
-            "SZDJSSFYYQFS": "否",  # 七天内居住地是否有疫情发生
-            "JZDSFFXQHLSGKQY": "否",  # 居住地是否风险区或临时管控区域
-            "TWSFZC": "是",  # 体温是否正常
-            "SFYGRZZ": "无",  # 是否有症状
+            "JZDYQFXDJ": f"{self.clockDetails.risk_level}",  # 居住地风险等级
+            "SFYZGFXDQLJS": f"{self.clockDetails.risk_history}",  # 有无中高风险旅居史
+            "SFJCZGFXDQLJSRY": f"{self.clockDetails.contact_history}",  # 有无接触中高风险地区旅居史人员
+            "SZDJSSFYYQFS": f"{self.clockDetails.prefecture_history}",  # 七天内居住地是否有疫情发生
+            "JZDSFFXQHLSGKQY": f"{self.clockDetails.is_risk}",  # 居住地是否风险区或临时管控区域
+            "TWSFZC": f"{self.clockDetails.is_normal_temp}",  # 体温是否正常
+            "SFYGRZZ": f"{self.clockDetails.has_symptom}",  # 是否有症状
             "TZRYSFYC": f"{self.clockDetails.roommates}",  # 同住人员情况
-            "YKMYS": "绿色",  # 渝康码颜色
+            "YKMYS": f"{self.clockDetails.code_color}",  # 渝康码颜色
             "QTSM": "无",  # 其他说明
             "DKSJ": self.__random_time(clock_time).strftime("%Y-%m-%d %H:%M:%S"),  # 打卡具体时间
             "RQ": clock_date,  # 打卡日期

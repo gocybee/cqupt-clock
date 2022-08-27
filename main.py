@@ -78,18 +78,26 @@ def captcha():
 def do():
     """
     form:
-        "name": "",        填写你的姓名
-        "stu_id": "",      填写你的学号
-        "username": "",    填写你的统一认证码
-        "password": "",    填写你的密码
-        "district": "",    填写你的地区,例如:"重庆市,重庆市,南岸区"
-        "location": "",    填写你的具体地点,例如:"重庆邮电大学 宁静6"
-        "roommates": "",   填写同住人员是否异常,选项: "是","无","无同住人员"
-        "longitude": "",   填写你的经度,例如: 106.608634
-        "latitude": "",    填写你的维度,例如: 29.528421
-        "is_force": "",    是否强制打卡(会覆盖之前的打卡记录),选项:"True","False"
-        "is_today": "",    是否给今天打卡,选项:"True","False"
-        "clock_time" "",   给指定日期打卡,格式:"%Y-%m-%d %H:%M:%S"(只有当"is_today"选项为"false"时该选项才填写)
+        "name": "",               填写你的姓名
+        "stu_id": "",             填写你的学号
+        "username": "",           填写你的统一认证码
+        "password": "",           填写你的密码
+        "district": "",           填写你的地区,例如:"重庆市,重庆市,南岸区"
+        "location": "",           填写你的具体地点,例如:"重庆邮电大学 宁静6"
+        "risk_level": "",         填写目前居住地新冠肺炎疫情风险等级,选项:"低风险","中风险","高风险","其他"
+        "risk_history": "",       填写7天内是否有中高风险地区旅居史,选项:"无","有"
+        "contact_history: "",     填写7天内否是接触中高风险地区旅居史人员,选项:"无","有"
+        "prefecture_history": "", 填写7天内所在地级市是否有本土疫情发生,选项:"否","是"
+        "is_risk": "",            填写目前居住地是否为风险区或临时管控区域,选项:"否","是"
+        "is_normal_temp: "",      填写今日体温是否正常,选项:"是","否"
+        "has_symptom": "",        填写今日是否有与新冠病毒感染有关的症状,选项:"否","是"
+        "roommates": "",          填写同住人员是否异常,选项: "是","无","无同住人员"
+        "code_color": "",         填写你的渝康码颜色,选项:"绿色","黄色","红色","其他"
+        "longitude": "",          填写你的经度,例如: 106.608634
+        "latitude": "",           填写你的维度,例如: 29.528421
+        "is_force": "",           是否强制打卡(会覆盖之前的打卡记录),选项:"True","False"
+        "is_today": "",           是否给今天打卡,选项:"True","False"
+        "clock_time" "",          给指定日期打卡,格式:"%Y-%m-%d %H:%M:%S"(只有当"is_today"选项为"false"时该选项才填写)
     """
     req = request.form.to_dict()
     try:
@@ -135,9 +143,10 @@ def do():
             if notice.check():
                 notice.do(res['msg'])
                 return jsonify(res), int(res['code'])
+
         if notice.check():
             notice.do(res['msg'])
-            logger.info('打卡成功')
+            logger.error('打卡失败')
             return jsonify(res), 401
 
 

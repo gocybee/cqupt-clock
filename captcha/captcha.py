@@ -36,9 +36,9 @@ def get_captcha_img(timestamp, session_id, route):
     if not img_response.ok:
         raise ConnectionError
     image = Image.open(BytesIO(img_response.content))
-    # plt.imshow(image)
+    plt.imshow(image)
     # plt.show()
-    return image
+    # return image
 
 
 def get_captcha_answer(img=Image.Image):

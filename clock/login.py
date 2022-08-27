@@ -60,23 +60,23 @@ def login(username, password):
         browser.find_element(By.ID, 'password').clear()
         browser.find_element(By.ID, 'password').send_keys(password)
 
-        # 获取captcha的请求地址
-        captcha_url = browser.find_element(By.ID, 'captchaImg').get_attribute('src')
-        # 获取captcha的当前时间戳
-        timestamp = (captcha_url[(captcha_url.find('?') + 1):])
+        # # 获取captcha的请求地址
+        # captcha_url = browser.find_element(By.ID, 'captchaImg').get_attribute('src')
+        # # 获取captcha的当前时间戳
+        # timestamp = (captcha_url[(captcha_url.find('?') + 1):])
 
         # 获取cookie中的'JSESSIONID'和'route'
 
         session_id = browser.get_cookie('JSESSIONID').get('value')
         route = browser.get_cookie('route').get('value')
 
-        # 获取验证码答案
-        res = requests.get(
-            'http://localhost:8089/captcha?timestamp=%s&session_id=%s&route=%s' % (timestamp, session_id, route))
-        j = json.loads(res.text)
+        # # 获取验证码答案
+        # res = requests.get(
+        #     'http://localhost:8089/captcha?timestamp=%s&session_id=%s&route=%s' % (timestamp, session_id, route))
+        # j = json.loads(res.text)
 
-        # 输入验证码
-        browser.find_element(By.ID, 'captcha').send_keys(j['data'])
+        # # 输入验证码
+        # browser.find_element(By.ID, 'captcha').send_keys(j['data'])
 
         # 点击按钮"7天内免登录"
         browser.find_element(By.ID, 'rememberMe').click()
