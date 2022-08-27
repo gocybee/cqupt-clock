@@ -31,7 +31,7 @@ def login(username, password):
     option.add_argument(f'user-data-dir={current_dir_path}/clock/cookies')  # 设置用户数据存储位置
     option.add_argument('-no-sandbox')  # 让chrome在root权限下跑
     option.add_argument('-disable-dev-shm-usage')
-    option.add_argument('-headless')  # 不用打开图形界面
+    # option.add_argument('-headless')  # 不用打开图形界面
     option.add_argument('-disable-cookie-encryption')  # 取消cookie加密
 
     browser = webdriver.Chrome(chrome_options=option)
@@ -67,8 +67,8 @@ def login(username, password):
 
         # 获取cookie中的'JSESSIONID'和'route'
 
-        session_id = browser.get_cookie('JSESSIONID').get('value')
-        route = browser.get_cookie('route').get('value')
+        # session_id = browser.get_cookie('JSESSIONID').get('value')
+        # route = browser.get_cookie('route').get('value')
 
         # # 获取验证码答案
         # res = requests.get(
