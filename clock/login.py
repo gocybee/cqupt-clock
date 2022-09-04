@@ -31,7 +31,7 @@ def login(username, password):
     option.add_argument(f'user-data-dir={current_dir_path}/clock/cookies')  # 设置用户数据存储位置
     option.add_argument('-no-sandbox')  # 让chrome在root权限下跑
     option.add_argument('-disable-dev-shm-usage')
-    # option.add_argument('-headless')  # 不用打开图形界面
+    option.add_argument('-headless')  # 不用打开图形界面
     option.add_argument('-disable-cookie-encryption')  # 取消cookie加密
 
     browser = webdriver.Chrome(chrome_options=option)
@@ -41,8 +41,6 @@ def login(username, password):
     browser.get(LOGIN_URL)
     # 隐式等待10秒(等待加载完页面再执行后续操作)
     browser.implicitly_wait(10)
-
-    time.sleep(3)
 
     if "personalInfo" in browser.current_url:
         logger.info('使用之前的"CASTGC"cookie')
@@ -60,23 +58,31 @@ def login(username, password):
         browser.find_element(By.ID, 'password').clear()
         browser.find_element(By.ID, 'password').send_keys(password)
 
-        # # 获取captcha的请求地址
-        # captcha_url = browser.find_element(By.ID, 'captchaImg').get_attribute('src')
-        # # 获取captcha的当前时间戳
-        # timestamp = (captcha_url[(captcha_url.find('?') + 1):])
+        # 鉴别是否需要输入验证码
+        check_need_captcha_res = requests.get(
+            url="https://ids.cqupt.edu.cn/authserver/checkNeedCaptcha.htl",
+            data={"username": username}
+        )
+        check_need_captcha_res.close()
 
-        # 获取cookie中的'JSESSIONID'和'route'
+        if check_need_captcha_res.json().get("isNeed") == "ture":
+            # 获取captcha的请求地址
+            captcha_url = browser.find_element(By.ID, 'captchaImg').get_attribute('src')
+            # 获取captcha的当前时间戳
+            timestamp = (captcha_url[(captcha_url.find('?') + 1):])
 
-        # session_id = browser.get_cookie('JSESSIONID').get('value')
-        # route = browser.get_cookie('route').get('value')
+            # 获取cookie中的'JSESSIONID'和'route'
 
-        # # 获取验证码答案
-        # res = requests.get(
-        #     'http://localhost:8089/captcha?timestamp=%s&session_id=%s&route=%s' % (timestamp, session_id, route))
-        # j = json.loads(res.text)
+            session_id = browser.get_cookie('JSESSIONID').get('value')
+            route = browser.get_cookie('route').get('value')
 
-        # # 输入验证码
-        # browser.find_element(By.ID, 'captcha').send_keys(j['data'])
+            # 获取验证码答案
+            captcha_res = requests.get(
+                'http://localhost:8089/captcha?timestamp=%s&session_id=%s&route=%s' % (timestamp, session_id, route))
+            j = json.loads(captcha_res.text)
+
+            # 输入验证码
+            browser.find_element(By.ID, 'captcha').send_keys(j['data'])
 
         # 点击按钮"7天内免登录"
         browser.find_element(By.ID, 'rememberMe').click()
