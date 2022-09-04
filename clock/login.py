@@ -65,7 +65,7 @@ def login(username, password):
         )
         check_need_captcha_res.close()
 
-        if check_need_captcha_res.json().get("isNeed") == "ture":
+        if check_need_captcha_res.json().get("isNeed") == "true":
             # 获取captcha的请求地址
             captcha_url = browser.find_element(By.ID, 'captchaImg').get_attribute('src')
             # 获取captcha的当前时间戳
