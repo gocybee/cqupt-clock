@@ -210,8 +210,6 @@ docker run -it \
 --name cqupt-clock \
 -d \
 --restart=always \
--p 8089:8089 \
--e CLOCK_PORT=8089
 -e ENABLE_CRON="true" \
 -e CRON_HOUR=12 \
 -e CRON_JITTER=3600 \
@@ -225,7 +223,6 @@ stellarisw/cqupt-clock
 
 环境变量说明：
 
-- **CLOCK_PORT**：服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
 - **ENABLE_CRON**：开启客户端
 - **CRON_HOUR**：设置打卡时间点 (参数范围: 0-23,默认为12)
 - **CRON_JITTER**：设置打卡时间抖动范围 (参数单位: 秒,默认为3600)
@@ -262,7 +259,6 @@ cqupt-clock
 
 环境变量说明：
 
-- **CLOCK_PORT**：服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
 - **ENABLE_CRON**：开启客户端
 - **CRON_HOUR**：设置打卡时间点 (参数范围: 0-23,默认为12)
 - **CRON_JITTER**：设置打卡时间抖动范围 (参数单位: 秒,默认为3600)
