@@ -1,6 +1,6 @@
 # CQUPT-CLOCK
 
-[![build](https://img.shields.io/badge/build-1.5.0-brightgreen)](https://github.com/StellarisW/StellarisW)[![image](https://img.shields.io/docker/image-size/stellarisw/cqupt-clock)](https://hub.docker.com/repository/docker/stellarisw/cqupt-clock)[![build](https://img.shields.io/badge/flask-v2.2.2-%230e7fc0)](https://github.com/pallets/flask)[![build](https://img.shields.io/badge/pytorch-v1.12.1-%23f37f40)](https://github.com/pytorch/pytorch)
+[![build](https://img.shields.io/badge/build-1.5.1-brightgreen)](https://github.com/StellarisW/StellarisW)[![image](https://img.shields.io/docker/image-size/stellarisw/cqupt-clock)](https://hub.docker.com/repository/docker/stellarisw/cqupt-clock)[![build](https://img.shields.io/badge/flask-v2.2.2-%230e7fc0)](https://github.com/pallets/flask)[![build](https://img.shields.io/badge/pytorch-v1.12.1-%23f37f40)](https://github.com/pytorch/pytorch)
 
 > 本项目是 **CQUPT 企业微信学生健康打卡** 的一个自动化打卡脚本，可以一定程度上节约**身体健康的同学**申报的时间。
 >
