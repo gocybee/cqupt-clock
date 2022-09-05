@@ -294,13 +294,7 @@ cqupt-clock
 
 #### 其他
 
-如果需要更改打卡信息，则需要更改 `info.json` 文件，然后执行命令 
-
-```sh
-docker restart cqupt-clock
-```
-
-
+如果需要更改打卡信息，直接修改 `info.json` 文件即可
 
 如果需要更改打卡配置，则需要执行命令
 
