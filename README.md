@@ -255,6 +255,7 @@ stellarisw/cqupt-clock
 - **EMAIL_ACCOUNT**：邮箱账号 (可选)
 - **EMAIL_PASSWORD**：邮箱授权码 (可选)
 - **SMTP_SERVER**：邮箱服务器 (可选, 默认为 QQ邮箱)
+- **-v .../info.sjon**：/workspace/cron/info.json \ 填写 **info.json** 文件位置，只需更改":"左边的参数即可
 
 #### 部署方式二
 
