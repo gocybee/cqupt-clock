@@ -15,6 +15,7 @@
 1. 本脚本仅供 **学习交流** 使用，请勿过分依赖，时刻注意 **所在地区的风险等级** 及 **自身健康状况**，如有特殊情况，请立即停止该脚本并申报实际情况！
 2. 本脚本仅供 **低风险地区** 及 **身体健康状况良好** 的学生使用，如果身体有不适，请立即报告给辅导员
 3. 若使用本脚本导致的一切后果，如 **隐瞒自身健康状况**，**误报** 等，本项目概不负责。
+4. 请勿将本仓库的任何内容用于**商业**或**非法**目的，否则后果自负。
 
 ## 📌 前置条件
 
@@ -85,7 +86,7 @@ stellarisw/cqupt-clock
 
 执行以下命令
 
-```
+```sh
 git clone https://github.com/gocybee/cqupt-clock.git
 ```
 
@@ -178,15 +179,15 @@ cqupt-clock
 
 如果需要更改打卡配置，则需要执行命令
 
-```
+```sh
 docker stop cqupt-clock
 ```
 
-```
+```sh
 docker rm cqupt-clock
 ```
 
-```
+```sh
 docker run -it \
 ...
 ```
@@ -259,7 +260,7 @@ stellarisw/cqupt-clock
 
 执行以下命令：
 
-```
+```sh
 git clone https://github.com/gocybee/cqupt-clock.git
 ```
 
@@ -303,15 +304,15 @@ docker restart cqupt-clock
 
 如果需要更改打卡配置，则需要执行命令
 
-```
+```sh
 docker stop cqupt-clock
 ```
 
-```
+```sh
 docker rm cqupt-clock
 ```
 
-```
+```sh
 docker run -it \
 ...
 ```
