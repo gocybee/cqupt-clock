@@ -31,6 +31,10 @@
 
     可以设置一个固定的时间，打卡的时间会在这个时间点进行**抖动**
 
+- 随机打卡位置
+
+    根据所填经纬度增加干扰量
+
 - 验证码识别
 
     采用 **深度学习** 技术，训练出了验证码识别模型，识别度高达 90%
@@ -49,29 +53,7 @@
 
 使用这种形式部署需要每天 **手动** 向 **打卡接口** 发送携带户信息和打卡信息的请求（当然也可以自己写个发送请求的 CRON），然后服务端会自动调用 **验证码识别接口** 来登录，并进行自动打卡。
 
-#### 部署方式1
-
-下载本仓库，拷贝本仓库代码到服务器，在代码根目录下执行以下命令
-
-```sh
-docker build -t cqupt-clock .
-```
-
-```sh
-docker run -it \
---name cqupt-clock \
--d \
---restart=always \
--p 8089:8089 \
--e CLOCK_PORT= 8089 \ \# 服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
--e EMAIL_ACCOUNT="" \ \# 邮箱账号 (可选)
--e EMAIL_PASSWORD="" \ \# 邮箱授权码 (可选)
--e SMTP_SERVER="" \ \# 邮箱服务器 (可选,默认为 QQ邮箱)
--v /www/wwwroot/cqupt-clock:/workspace \ \# 项目代码文件根目录(只需要更改":"左边的目录即可)
-cqupt-clock
-```
-
-#### 部署方式2
+#### 部署方式1 (推荐)
 
 执行以下命令：
 
@@ -85,12 +67,52 @@ docker run -it \
 -d \
 --restart=always \
 -p 8089:8089 \
--e CLOCK_PORT= 8089 \ \# 服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
--e EMAIL_ACCOUNT="" \ \# 邮箱账号 (可选)
--e EMAIL_PASSWORD="" \ \# 邮箱授权码 (可选)
--e SMTP_SERVER="" \ \# 邮箱服务器 (可选,默认为 QQ邮箱)
+-e CLOCK_PORT=8089 \
+-e EMAIL_ACCOUNT="" \
+-e EMAIL_PASSWORD="" \
+-e SMTP_SERVER="" \
+stellarisw/cqupt-clock
+```
+
+环境变量说明：
+
+- **CLOCK_PORT**：服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
+- **EMAIL_ACCOUNT**：邮箱账号 (可选)
+- **EMAIL_PASSWORD**：邮箱授权码 (可选)
+- **SMTP_SERVER**：邮箱服务器 (可选,默认为 QQ邮箱)
+
+#### 部署方式2
+
+执行以下命令
+
+```
+git clone https://github.com/gocybee/cqupt-clock.git
+```
+
+```sh
+docker build -t cqupt-clock ./cqupt-clock
+```
+
+```sh
+docker run -it \
+--name cqupt-clock \
+-d \
+--restart=always \
+-p 8089:8089 \
+-e CLOCK_PORT=8089 \
+-e EMAIL_ACCOUNT="" \
+-e EMAIL_PASSWORD="" \
+-e SMTP_SERVER="" \
+-v $(pwd)/cqupt-clock:/workspace \
 cqupt-clock
 ```
+
+环境变量说明：
+
+- **CLOCK_PORT**：服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
+- **EMAIL_ACCOUNT**：邮箱账号 (可选)
+- **EMAIL_PASSWORD**：邮箱授权码 (可选)
+- **SMTP_SERVER**：邮箱服务器 (可选,默认为 QQ邮箱)
 
 #### API 文档
 
@@ -175,10 +197,52 @@ docker run -it \
 
 使用这种形式部署，可以实现全自动化打卡，需要配置用户信息和打卡信息配置文件，在项目`cron/info.json`目录下，形式为 **json**，根据打卡接口文档配置相应的参数值即可，同时还需要配置打卡的时间点和打卡时间抖动范围
 
-#### 部署方式一
+#### 部署方式一 (推荐)
+
+执行以下命令：
 
 ```sh
-docker build -t cqupt-clock .
+docker pull stellarisw/cqupt-clock
+```
+
+```sh
+docker run -it \
+--name cqupt-clock \
+-d \
+--restart=always \
+-p 8089:8089 \
+-e CLOCK_PORT=8089
+-e ENABLE_CRON="true" \
+-e CRON_HOUR=12 \
+-e CRON_JITTER=3600 \
+-e EMAIL_ACCOUNT="" \
+-e EMAIL_PASSWORD="" \
+-e SMTP_SERVER="" \
+-e 
+-v $(pwd)/cqupt-clock/cron/info.json:/workspace/cron/info.json \
+stellarisw/cqupt-clock
+```
+
+环境变量说明：
+
+- **CLOCK_PORT**：服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
+- **ENABLE_CRON**：开启客户端
+- **CRON_HOUR**：设置打卡时间点 (参数范围: 0-23,默认为12)
+- **CRON_JITTER**：设置打卡时间抖动范围 (参数单位: 秒,默认为3600)
+- **EMAIL_ACCOUNT**：邮箱账号 (可选)
+- **EMAIL_PASSWORD**：邮箱授权码 (可选)
+- **SMTP_SERVER**：邮箱服务器 (可选,默认为 QQ邮箱)
+
+#### 部署方式二
+
+执行以下命令：
+
+```
+git clone https://github.com/gocybee/cqupt-clock.git
+```
+
+```sh
+docker build -t cqupt-clock ./cqupt-clock
 ```
 
 ```sh
@@ -192,31 +256,19 @@ docker run -it \
 -e EMAIL_ACCOUNT="" \ \# 设置邮箱账号 (可选)
 -e EMAIL_PASSWORD="" \ \# 设置邮箱授权码 (可选)
 -e SMTP_SERVER="" \ \# 邮箱服务器 (可选,默认为 QQ邮箱)
--v /www/wwwroot/cqupt-clock:/workspace \ \# 设置项目代码文件根目录(只需要更改":"左边的目录即可)
+-v $(pwd)/cqupt-clock:/workspace \
 cqupt-clock
 ```
 
-#### 部署方式二
+环境变量说明：
 
-```sh
-docker pull stellarisw/cqupt-clock
-```
-
-```sh
-docker run -it \
---name cqupt-clock \
--d \
---restart=always \
--e ENABLE_CRON="true" \ \# 开启客户端
--e CRON_HOUR=12 \ \# 设置打卡时间点 (参数范围: 0-23,默认为12)
--e CRON_JITTER=3600 \ \# 设置打卡时间抖动范围 (参数单位: 秒,默认为3600)
--e EMAIL_ACCOUNT="" \ \# 邮箱账号 (可选)
--e EMAIL_PASSWORD="" \ \# 邮箱授权码 (可选)
--e SMTP_SERVER="" \ \# 邮箱服务器 (可选,默认为 QQ邮箱)
--e 
--v /www/root/cqupt-clock/cron/info.json:/workspace/cron \ \# 设置用户信息和打卡信息配置文件位置(只需要更改":"左边的目录即可)
-cqupt-clock
-```
+- **CLOCK_PORT**：服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
+- **ENABLE_CRON**：开启客户端
+- **CRON_HOUR**：设置打卡时间点 (参数范围: 0-23,默认为12)
+- **CRON_JITTER**：设置打卡时间抖动范围 (参数单位: 秒,默认为3600)
+- **EMAIL_ACCOUNT**：邮箱账号 (可选)
+- **EMAIL_PASSWORD**：邮箱授权码 (可选)
+- **SMTP_SERVER**：邮箱服务器 (可选,默认为 QQ邮箱)
 
 #### 其他
 
