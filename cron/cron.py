@@ -4,7 +4,10 @@ import zoneinfo
 from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
 
-do_url = "http://localhost:8089/do"
+port = os.getenv("CLOCK_PORT")
+if port is None:
+    port = 8089
+do_url = f'http://localhost:{port}/do'
 
 
 def my_job(**kwargs):

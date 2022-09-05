@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 from distutils.util import strtobool
 
 from flask import Flask, request, jsonify
@@ -11,7 +12,13 @@ from notice import notice
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
-logfile = './log.txt'
+logfile = './log/log.txt'
+if not os.path.exists(logfile):
+    if not os.path.exists(os.path.dirname(logfile)):
+        os.makedirs(os.path.dirname(logfile))
+    file = open(logfile, 'w')
+    file.close()
+
 fh = logging.FileHandler(logfile, mode='a')
 fh.setLevel(logging.DEBUG)
 
@@ -46,8 +53,8 @@ def captcha():
         res = {
             "code": "401",
             "ok": "false",
-            "data": "",
-            "msg": f'获取验证码失败,参数{err.args[0]}没有填写'
+            "msg": f'获取验证码失败,参数{err.args[0]}没有填写',
+            "data": ""
         }
         return jsonify(res), 401
     # 通过时间戳和session_id获取对应的captcha
@@ -58,8 +65,8 @@ def captcha():
         res = {
             "code": "500",
             "ok": "false",
-            "data": "",
-            "msg": "获取验证码失败,没有获取到验证码图片"
+            "msg": "获取验证码失败,没有获取到验证码图片",
+            "data": ""
         }
         return jsonify(res), 500
     # 获取对应captcha的answer
@@ -67,9 +74,9 @@ def captcha():
     logger.info(f'获取到验证码答案:{answer}')
     res = {
         "code": "200",
+        "msg": "获取验证码成功",
         "ok": "true",
-        "data": answer,
-        "msg": "获取验证码成功"
+        "data": answer
     }
     return jsonify(res), 200
 
@@ -105,14 +112,14 @@ def do():
     except KeyError as err:
         res = {
             "code": "401",
-            "ok": "false",
-            "msg": f'参数"{err.args[0]}"没有填写'
+            "msg": f'参数"{err.args[0]}"没有填写',
+            "ok": "false"
         }
     except BaseException as err:
         res = {
             "code": "401",
-            "ok": "false",
-            "msg": f'{err.args[0]}'
+            "msg": f'{err.args[0]}',
+            "ok": "false"
         }
     else:
         logger.info('获取cookie成功')
@@ -125,30 +132,33 @@ def do():
         except KeyError as err:
             res = {
                 "code": "401",
-                "ok": "false",
-                "msg": f'参数"{err.args[0]}"没有填写'
+                "msg": f'参数"{err.args[0]}"没有填写',
+                "ok": "false"
             }
         except BaseException as err:
             res = {
                 "code": "401",
-                "ok": "false",
-                "msg": f'{err.args[0]}'
+                "msg": f'{err.args[0]}',
+                "ok": "false"
             }
         else:
             res = {
                 "code": "200",
-                "ok": "true",
-                "msg": "打卡成功"
+                "msg": "打卡成功",
+                "ok": "true"
             }
             if notice.check():
                 notice.do(res['msg'])
                 return jsonify(res), int(res['code'])
 
-        if notice.check():
-            notice.do(res['msg'])
-            logger.error('打卡失败')
-            return jsonify(res), 401
+    if notice.check():
+        notice.do(res['msg'])
+        logger.error('打卡失败')
+        return jsonify(res), 401
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8089, debug=False)
+    port = os.getenv("CLOCK_PORT")
+    if port is None:
+        port = 8089
+    app.run(host='0.0.0.0', port=port, debug=False)
