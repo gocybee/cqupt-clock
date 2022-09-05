@@ -242,7 +242,6 @@ docker run -it \
 -e EMAIL_ACCOUNT="" \
 -e EMAIL_PASSWORD="" \
 -e SMTP_SERVER="" \
--e 
 -v $(pwd)/cqupt-clock/cron/info.json:/workspace/cron/info.json \
 stellarisw/cqupt-clock
 ```
