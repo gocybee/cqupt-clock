@@ -1,0 +1,22 @@
+{
+	"name": "",
+	"stu_id": "",
+	"username": "",
+	"password": "",
+	"is_today": "",
+	"clock_time": "",
+	"is_force": "",
+	"latitude": "",
+	"longitude": "",
+	"district": "",
+	"location": "",
+	"risk_level": "",
+	"risk_history": "",
+	"contact_history": "",
+	"prefecture_history": "",
+	"is_risk": "",
+	"is_normal_temp": "",
+	"has_symptom": "",
+	"roommates": "",
+	"code_color": ""
+}

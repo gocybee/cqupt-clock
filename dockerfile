@@ -11,6 +11,7 @@ RUN pip install flask -i https://mirrors.aliyun.com/pypi/simple/
 RUN pip install selenium -i https://mirrors.aliyun.com/pypi/simple/
 RUN pip install browser-cookie3 -i https://mirrors.aliyun.com/pypi/simple/
 RUN pip install matplotlib -i https://mirrors.aliyun.com/pypi/simple/
+RUN pip install apscheduler -i https://mirrors.aliyun.com/pypi/simple/
 # 更新apt-get源
 RUN cp ./dependency/sources.list /etc/apt/sources.list
 RUN apt-get update
@@ -23,4 +24,4 @@ RUN apt-get install -y tzdata # 该镜像没有zoneinfo文件夹
 RUN rm -f /etc/localtime
 RUN ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-CMD ["python","main.py"]
+CMD ["./run.sh"]
