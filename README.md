@@ -79,7 +79,7 @@ stellarisw/cqupt-clock
 - **CLOCK_PORT**：服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
 - **EMAIL_ACCOUNT**：邮箱账号 (可选)
 - **EMAIL_PASSWORD**：邮箱授权码 (可选)
-- **SMTP_SERVER**：邮箱服务器 (可选,默认为 QQ邮箱)
+- **SMTP_SERVER**：邮箱服务器 (可选, 默认为 QQ邮箱)
 
 #### 部署方式2
 
@@ -112,7 +112,7 @@ cqupt-clock
 - **CLOCK_PORT**：服务端暴露的端口，更改的话需要与上面的 -p 参数进行同步
 - **EMAIL_ACCOUNT**：邮箱账号 (可选)
 - **EMAIL_PASSWORD**：邮箱授权码 (可选)
-- **SMTP_SERVER**：邮箱服务器 (可选,默认为 QQ邮箱)
+- **SMTP_SERVER**：邮箱服务器 (可选, 默认为 QQ邮箱)
 
 #### API 文档
 
@@ -137,9 +137,9 @@ cqupt-clock
 | location           | 重庆邮电大学 xx苑x舍xxx号 | 是       | 具体地点                                                     |
 | risk_level         | 低风险                    | 是       | 目前居住地新冠肺炎疫情风险等级, 选项:"低风险","中风险","高风险","其他" |
 | risk_history       | 无                        | 是       | 7天内是否有中高风险地区旅居史, 选项:"无","有"                |
-| contact_history    | 无                        | 是       | 7天内否是接触中高风险地区旅居史人员                          |
-| prefecture_history | 是                        | 是       | 7天内所在地级市是否有本土疫情发生, 选项:"否","是"            |
-| is_risk            | 是                        | 是       | 目前居住地是否为风险区或临时管控区域, 选项:"否","是"         |
+| contact_history    | 无                        | 是       | 7天内否是接触中高风险地区旅居史人员, 选项:"无","有"          |
+| prefecture_history | 否                        | 是       | 7天内所在地级市是否有本土疫情发生, 选项:"否","是"            |
+| is_risk            | 否                        | 是       | 目前居住地是否为风险区或临时管控区域, 选项:"否","是"         |
 | is_normal_temp     | 是                        | 是       | 今日体温是否正常, 选项:"是","否"                             |
 | has_symptom        | 否                        | 是       | 今日是否有与新冠病毒感染有关的症状, 选项:"否","是"           |
 | roommates          | 无                        | 是       | 同住人员信息, 选项: "是","无","无同住人员"                   |
@@ -249,11 +249,11 @@ stellarisw/cqupt-clock
 环境变量说明：
 
 - **ENABLE_CRON**：开启客户端
-- **CRON_HOUR**：设置打卡时间点 (参数范围: 0-23,默认为12)
-- **CRON_JITTER**：设置打卡时间抖动范围 (参数单位: 秒,默认为3600)
+- **CRON_HOUR**：设置打卡时间点 (参数范围: 0-23, 默认为12)
+- **CRON_JITTER**：设置打卡时间抖动范围 (参数单位: 秒, 默认为3600)
 - **EMAIL_ACCOUNT**：邮箱账号 (可选)
 - **EMAIL_PASSWORD**：邮箱授权码 (可选)
-- **SMTP_SERVER**：邮箱服务器 (可选,默认为 QQ邮箱)
+- **SMTP_SERVER**：邮箱服务器 (可选, 默认为 QQ邮箱)
 
 #### 部署方式二
 
@@ -285,11 +285,11 @@ cqupt-clock
 环境变量说明：
 
 - **ENABLE_CRON**：开启客户端
-- **CRON_HOUR**：设置打卡时间点 (参数范围: 0-23,默认为12)
-- **CRON_JITTER**：设置打卡时间抖动范围 (参数单位: 秒,默认为3600)
+- **CRON_HOUR**：设置打卡时间点 (参数范围: 0-23, 默认为12)
+- **CRON_JITTER**：设置打卡时间抖动范围 (参数单位: 秒, 默认为3600)
 - **EMAIL_ACCOUNT**：邮箱账号 (可选)
 - **EMAIL_PASSWORD**：邮箱授权码 (可选)
-- **SMTP_SERVER**：邮箱服务器 (可选,默认为 QQ邮箱)
+- **SMTP_SERVER**：邮箱服务器 (可选, 默认为 QQ邮箱)
 
 #### 其他
 
