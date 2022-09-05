@@ -197,6 +197,31 @@ docker run -it \
 
 使用这种形式部署，可以实现全自动化打卡，需要配置用户信息和打卡信息配置文件，在项目`cron/info.json`目录下，形式为 **json**，根据打卡接口文档配置相应的参数值即可，同时还需要配置打卡的时间点和打卡时间抖动范围
 
+```json
+{
+	"name": "",
+	"stu_id": "",
+	"username": "",
+	"password": "",
+	"is_today": "",
+	"clock_time": "",
+	"is_force": "",
+	"latitude": "",
+	"longitude": "",
+	"district": "",
+	"location": "",
+	"risk_level": "",
+	"risk_history": "",
+	"contact_history": "",
+	"prefecture_history": "",
+	"is_risk": "",
+	"is_normal_temp": "",
+	"has_symptom": "",
+	"roommates": "",
+	"code_color": ""
+}
+```
+
 #### 部署方式一 (推荐)
 
 执行以下命令：
