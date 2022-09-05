@@ -159,6 +159,6 @@ def do():
 
 if __name__ == '__main__':
     port = os.getenv("CLOCK_PORT")
-    if port is None:
+    if port is None or port == "":
         port = 8089
     app.run(host='0.0.0.0', port=port, debug=False)
