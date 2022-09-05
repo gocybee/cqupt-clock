@@ -1,6 +1,6 @@
 import json
 import os
-import zoneinfo
+from backports import zoneinfo
 from apscheduler.schedulers.blocking import BlockingScheduler
 import requests
 
