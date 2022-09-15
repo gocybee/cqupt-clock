@@ -111,23 +111,17 @@ def do():
     req = request.form.to_dict()
 
     # 自动填充功能
-    is_enable_autufill = os.getenv("ENABLE_AUTOFILL")
-    if is_enable_autufill is not None:
+    ak = os.getenv("BAIDU_MAP_API_KEY")
+    if ak is not None or ak != "":
         try:
-            is_enable_autufill = strtobool(is_enable_autufill)
-        except KeyError:
-            logger.info("关闭自动填充功能")
+            fill = Fill(ak, f'{req["district"].replace(",", "")}{req["location"]}', req['location'])
         except BaseException as err:
             logger.info(f'初始化自动填充功能失败, 错误: {err}')
         else:
-            if is_enable_autufill:
-                fill = Fill(f'{req["district"].replace(",", "")}{req["location"]}')
-
-                req['risk_level'] = fill.get_risk_level()
-                req['prefecture_history'] = fill.get_prefecture_history()
-                req['is_risk'] = fill.get_is_risk()
-            else:
-                logger.info("关闭自动填充功能")
+            req['longitude'], req['latitude'] = fill.get_lng_and_lat()
+            req['risk_level'] = fill.get_risk_level()
+            req['prefecture_history'] = fill.get_prefecture_history()
+            req['is_risk'] = fill.get_is_risk()
 
     # 打卡功能
     try:
