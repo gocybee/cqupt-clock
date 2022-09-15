@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify
 
 from captcha import captcha as c
 from clock.clock import DailyClock as Clock
+from fill.fill import Fill as Fill
 from notice import notice
 
 logger = logging.getLogger()
@@ -108,6 +109,27 @@ def do():
         "code_color": "",         填写你的渝康码颜色,选项:"绿色","黄色","红色","其他"
     """
     req = request.form.to_dict()
+
+    # 自动填充功能
+    is_enable_autufill = os.getenv("ENABLE_AUTOFILL")
+    if is_enable_autufill is not None:
+        try:
+            is_enable_autufill = strtobool(is_enable_autufill)
+        except KeyError:
+            logger.info("关闭自动填充功能")
+        except BaseException as err:
+            logger.info(f'初始化自动填充功能失败, 错误: {err}')
+        else:
+            if is_enable_autufill:
+                fill = Fill(f'{req["district"].replace(",", "")}{req["location"]}')
+
+                req['risk_level'] = fill.get_risk_level()
+                req['prefecture_history'] = fill.get_prefecture_history()
+                req['is_risk'] = fill.get_is_risk()
+            else:
+                logger.info("关闭自动填充功能")
+
+    # 打卡功能
     try:
         clock = Clock(args=req)
     except KeyError as err:
@@ -122,35 +144,39 @@ def do():
             "msg": f'{err.args[0]}',
             "ok": "false"
         }
-    else:
-        logger.info('获取cookie成功')
-        try:
-            if strtobool(req['is_today']):
-                clock.clock_on(clock_time=datetime.datetime.now(), force=strtobool(req['is_force']))
-            else:
-                clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
-                               force=strtobool(req['is_force']))
-        except KeyError as err:
-            res = {
-                "code": "401",
-                "msg": f'参数"{err.args[0]}"没有填写',
-                "ok": "false"
-            }
-        except BaseException as err:
-            res = {
-                "code": "401",
-                "msg": f'{err.args[0]}',
-                "ok": "false"
-            }
+
+    logger.info('获取cookie成功')
+    try:
+        if strtobool(req['is_today']):
+            clock.clock_on(clock_time=datetime.datetime.now(), force=strtobool(req['is_force']))
         else:
-            res = {
-                "code": "200",
-                "msg": "打卡成功",
-                "ok": "true"
-            }
-            if notice.check():
-                notice.do(res['msg'])
-                return jsonify(res), int(res['code'])
+            clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
+                           force=strtobool(req['is_force']))
+    except KeyError as err:
+        res = {
+            "code": "401",
+            "msg": f'参数"{err.args[0]}"没有填写',
+            "ok": "false"
+        }
+        return jsonify(res), 401
+    except BaseException as err:
+        res = {
+            "code": "401",
+            "msg": f'{err.args[0]}',
+            "ok": "false"
+        }
+        return jsonify(res), 401
+
+    res = {
+        "code": "200",
+        "msg": "打卡成功",
+        "ok": "true"
+    }
+
+    # 通知功能
+    if notice.check():
+        notice.do(res['msg'])
+        return jsonify(res), int(res['code'])
 
     if notice.check():
         notice.do(res['msg'])
