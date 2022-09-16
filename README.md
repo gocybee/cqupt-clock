@@ -2,9 +2,9 @@
 
 [![build](https://img.shields.io/badge/build-1.6.0-brightgreen)](https://github.com/StellarisW/StellarisW)[![image](https://img.shields.io/docker/image-size/stellarisw/cqupt-clock)](https://hub.docker.com/repository/docker/stellarisw/cqupt-clock)[![build](https://img.shields.io/badge/flask-v2.2.2-%230e7fc0)](https://github.com/pallets/flask)[![build](https://img.shields.io/badge/pytorch-v1.12.1-%23f37f40)](https://github.com/pytorch/pytorch)
 
-> 本项目是 **CQUPT 企业微信学生健康打卡** 的一个自动化打卡脚本，可以一定程度上节约**身体健康的同学**申报的时间。
+> 本项目是 **重邮 CQUPT 企业微信学生健康打卡** 的一个自动化打卡脚本，可以一定程度上节约**身体健康的同学**申报的时间。
 >
-> 打卡逻辑主要是通过自动登录获取教务在线的cookie，然后进行企业微信的授权进行打卡。
+> 打卡逻辑主要是通过自动登录获取**重庆邮电大学**教务在线的cookie，然后进行企业微信的授权进行打卡。
 >
 > 登录验证码的识别主要使用 **pytorch** 设计了一个 **3层-CNN 卷积神经网络** 来预测验证码，
 >
