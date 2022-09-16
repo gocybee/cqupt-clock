@@ -12,8 +12,8 @@
 
 ## 📢 事前声明
 
-1. 本脚本仅供 **学习交流** 使用，请勿过分依赖，时刻注意 **所在地区的风险等级** 及 **自身健康状况**，如有特殊情况，请立即停止该脚本并申报实际情况！
-2. 本脚本仅供 **低风险地区** 及 **身体健康状况良好** 的学生使用，如果身体有不适，请立即报告给辅导员
+1. 本脚本仅供 **学习交流** 使用，请勿过分依赖，请时刻注意 **自身健康状况**，如有特殊情况，请立即停止该脚本并申报实际情况！
+2. 本脚本仅供 **身体健康状况良好** 的学生使用，如果身体有不适，请立即报告给辅导员
 3. 若使用本脚本导致的一切后果，如 **隐瞒自身健康状况**，**误报** 等，本项目概不负责。
 4. 请勿将本仓库的任何内容用于**商业**或**非法**目的，否则后果自负。
 
@@ -34,7 +34,9 @@
 
 - 打卡邮件提醒
 
-  每天打卡成功或失败后，会发送**邮件通知**当天的打卡情况
+  为防止本项目出现意料之外的 bug，每天打卡成功或失败后，会发送**邮件通知**当天的打卡情况
+
+  所以当通知打卡失败后，请进行手动打卡！！！
 
 - 智能检测居住地疫情风险情况
 
@@ -79,6 +81,8 @@
 
 ### 自动填充功能
 
+注：如果自动填充模块遇到错误，会填写用户发送请求的打卡信息或 `info.json` 的信息
+
 本项目的自动填充功能需要申请 **百度地图** 的 **API Key**
 
 申请流程如下：
@@ -112,7 +116,6 @@
     进入 `我的应用`，点击复制按钮即可
 
     ![image-20220916180627167](https://typora.stellaris.wang/image-20220916180627167.png)
-
 
 ## ✈ 部署
 
@@ -313,6 +316,7 @@ docker run -it \
 -e EMAIL_ACCOUNT="" \
 -e EMAIL_PASSWORD="" \
 -e SMTP_SERVER="" \
+-e BAIDU_MAP_API_KEY="" \
 -v $(pwd)/cqupt-clock/cron/info.json:/workspace/cron/info.json \
 stellarisw/cqupt-clock
 ```
@@ -325,6 +329,7 @@ stellarisw/cqupt-clock
 - **EMAIL_ACCOUNT**：邮箱账号 (可选)
 - **EMAIL_PASSWORD**：邮箱授权码 (可选)
 - **SMTP_SERVER**：邮箱服务器 (可选, 默认为 QQ邮箱)
+- **BAIDU_MAP_API_KEY**：百度地图 AK 码（可选，填写此项默认开启自动填充功能，不填则不开启）
 - **-v .../info.sjon:/workspace/cron/info.json**：填写 **info.json** 文件位置，只需更改":"左边的参数即可
 
 #### 部署方式二
@@ -350,6 +355,7 @@ docker run -it \
 -e EMAIL_ACCOUNT="" \
 -e EMAIL_PASSWORD="" \
 -e SMTP_SERVER="" \
+-e BAIDU_MAP_API_KEY="" \
 -v $(pwd)/cqupt-clock:/workspace \
 cqupt-clock
 ```
@@ -362,6 +368,7 @@ cqupt-clock
 - **EMAIL_ACCOUNT**：邮箱账号 (可选)
 - **EMAIL_PASSWORD**：邮箱授权码 (可选)
 - **SMTP_SERVER**：邮箱服务器 (可选, 默认为 QQ邮箱)
+- **BAIDU_MAP_API_KEY**：百度地图 AK 码（可选，填写此项默认开启自动填充功能，不填则不开启）
 
 #### 其他
 
