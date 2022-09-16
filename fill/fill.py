@@ -10,12 +10,15 @@ from fill.address.match import match_address
 geocoding_api = 'https://api.map.baidu.com/geocoding/v3/'
 reverse_geocoding_api = 'https://api.map.baidu.com/reverse_geocoding/v3/'
 risk_level_api = 'http://bmfw.www.gov.cn/bjww/interface/interfaceJson'
+prefecture_history_api = 'https://api.inews.qq.com/newsqa/v1/query/pubished/daily/list?&limit=7'
 
 GET_LOCATION_ERR = RuntimeError('参数没有填写')
 GET_AK_ERR = RuntimeError('没有找到 ak 环境变量')
 GET_LNG_AND_LAT_ERR = RuntimeError('获取经纬度信息失败')
 GET_AREA_CODE_ERR = RuntimeError('获取行政区划代码失败')
 GET_RISK_LEVEL_DATA_ERR = RuntimeError('获取疫情风险等级失败')
+GET_Prefecture_History_ERR = RuntimeError('分析七天内是否有疫情失败')
+GET_Query_Prefecture_History_API_ERR = RuntimeError('请求七天内是否有疫情API失败')
 
 logger = logging.getLogger()
 
@@ -36,6 +39,7 @@ class Fill:
         self.area_code = self.__get_area_code()  # 根据经纬度获取行政区划代码
         self.__init_risk_level_data()  # 初始化居住地风险等级数据
         self.__query_risk_level_data()  # 判断居住地是否在风险地区名单里面
+        self.__query_prefecture_history()  # 判断七天内是否有疫情 0|1
 
     def __get_lng_and_lat(self):
         res = request(method='GET',
@@ -121,6 +125,29 @@ class Fill:
                     self.risk_level = risk_data['level']
                     break
 
+    def __query_prefecture_history(self):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/87.0.4280.88 Safari/537.36',
+            'Accept-Language': 'zh-CN, zh',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,'
+                      '*/*;q=0.8, '
+                      'application/signed-exchange;v=b3;q=0.9',
+        }
+
+        rq = request.Request(headers=headers,
+                             url=f'{prefecture_history_api}'
+                                 f'&adCode={self.area_code}',
+                             )
+        resp = request.urlopen(rq)
+        j = json.loads(resp.read())
+        data = j['data']
+
+        for i in data:
+            if i['confirm_add'] != 0:
+                self.prefecture_history = 1
+        self.prefecture_history = 0
+
     # TODO: 抓包疫情数据
     # 初始化地级市本土疫情数据
     def __init_prefecture_data(self):
@@ -137,9 +164,10 @@ class Fill:
     # 获取7天内所在地级市是否有本土疫情发生
     def get_prefecture_history(self):
 
-        return ""
+        return self.prefecture_history
 
-    # 获取目前居住地是否为风险区或临时管控区域
+        # 获取目前居住地是否为风险区或临时管控区域
+
     def get_is_risk(self):
         if self.risk_level == 2 or self.risk_level == 3:
             return True
