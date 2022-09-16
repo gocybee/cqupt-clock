@@ -7,6 +7,7 @@ from flask import Flask, request, jsonify
 
 from captcha import captcha as c
 from clock.clock import DailyClock as Clock
+from fill.fill import Fill as Fill
 from notice import notice
 
 logger = logging.getLogger()
@@ -89,6 +90,12 @@ def do():
         "stu_id": "",             填写你的学号
         "username": "",           填写你的统一认证码
         "password": "",           填写你的密码
+        "is_today": "",           填写是否给今天打卡,选项:"True","False"
+        "clock_time": "",         填写给指定日期打卡,格式:"%Y-%m-%d %H:%M:%S"(只有当"is_today"选项为"false"时该选项才填写)
+        "is_force": "",           是否强制打卡(会覆盖之前的打卡记录), 选项:"True","False"
+        "latitude": "",           填写你的维度,例如: 29.528421
+        "longitude": "",          填写你的经度,例如: 106.608634
+        "is_force": "",           是否强制打卡(会覆盖之前的打卡记录),选项:"True","False"
         "district": "",           填写你的地区,例如:"重庆市,重庆市,南岸区"
         "location": "",           填写你的具体地点,例如:"重庆邮电大学 宁静6"
         "risk_level": "",         填写目前居住地新冠肺炎疫情风险等级,选项:"低风险","中风险","高风险","其他"
@@ -100,13 +107,23 @@ def do():
         "has_symptom": "",        填写今日是否有与新冠病毒感染有关的症状,选项:"否","是"
         "roommates": "",          填写同住人员是否异常,选项: "是","无","无同住人员"
         "code_color": "",         填写你的渝康码颜色,选项:"绿色","黄色","红色","其他"
-        "longitude": "",          填写你的经度,例如: 106.608634
-        "latitude": "",           填写你的维度,例如: 29.528421
-        "is_force": "",           是否强制打卡(会覆盖之前的打卡记录),选项:"True","False"
-        "is_today": "",           是否给今天打卡,选项:"True","False"
-        "clock_time" "",          给指定日期打卡,格式:"%Y-%m-%d %H:%M:%S"(只有当"is_today"选项为"false"时该选项才填写)
     """
     req = request.form.to_dict()
+
+    # 自动填充功能
+    ak = os.getenv("BAIDU_MAP_API_KEY")
+    if ak is not None or ak != "":
+        try:
+            fill = Fill(ak, f'{req["district"].replace(",", "")}{req["location"]}', req['location'])
+        except BaseException as err:
+            logger.info(f'初始化自动填充功能失败, 错误: {err}')
+        else:
+            req['longitude'], req['latitude'] = fill.get_lng_and_lat()
+            req['risk_level'] = fill.get_risk_level()
+            req['prefecture_history'] = fill.get_prefecture_history()
+            req['is_risk'] = fill.get_is_risk()
+
+    # 打卡功能
     try:
         clock = Clock(args=req)
     except KeyError as err:
@@ -121,35 +138,39 @@ def do():
             "msg": f'{err.args[0]}',
             "ok": "false"
         }
-    else:
-        logger.info('获取cookie成功')
-        try:
-            if strtobool(req['is_today']):
-                clock.clock_on(clock_time=datetime.datetime.now(), force=strtobool(req['is_force']))
-            else:
-                clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
-                               force=strtobool(req['is_force']))
-        except KeyError as err:
-            res = {
-                "code": "401",
-                "msg": f'参数"{err.args[0]}"没有填写',
-                "ok": "false"
-            }
-        except BaseException as err:
-            res = {
-                "code": "401",
-                "msg": f'{err.args[0]}',
-                "ok": "false"
-            }
+
+    logger.info('获取cookie成功')
+    try:
+        if strtobool(req['is_today']):
+            clock.clock_on(clock_time=datetime.datetime.now(), force=strtobool(req['is_force']))
         else:
-            res = {
-                "code": "200",
-                "msg": "打卡成功",
-                "ok": "true"
-            }
-            if notice.check():
-                notice.do(res['msg'])
-                return jsonify(res), int(res['code'])
+            clock.clock_on(clock_time=datetime.datetime.strptime(req['clock_time'], "%Y-%m-%d %H:%M:%S"),
+                           force=strtobool(req['is_force']))
+    except KeyError as err:
+        res = {
+            "code": "401",
+            "msg": f'参数"{err.args[0]}"没有填写',
+            "ok": "false"
+        }
+        return jsonify(res), 401
+    except BaseException as err:
+        res = {
+            "code": "401",
+            "msg": f'{err.args[0]}',
+            "ok": "false"
+        }
+        return jsonify(res), 401
+
+    res = {
+        "code": "200",
+        "msg": "打卡成功",
+        "ok": "true"
+    }
+
+    # 通知功能
+    if notice.check():
+        notice.do(res['msg'])
+        return jsonify(res), int(res['code'])
 
     if notice.check():
         notice.do(res['msg'])
