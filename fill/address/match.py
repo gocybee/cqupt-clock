@@ -23,7 +23,7 @@ number_set.update(big_chinese_number_list)
 number_set.update(small_letter_list)
 number_set.update(capital_letter_list)
 
-single_range_set = set
+single_range_set = set()
 single_range_set.update(number_set)
 single_range_set.update({"-"})
 
@@ -46,7 +46,7 @@ def match_address(src_address, dst_address):
     s_end, s_begin = find_next_range_block(src_address)
     d_end, d_begin = find_next_range_block(dst_address)
     while s_begin != 0 and d_begin != 0:
-        if match_range_block(str(src_address[s_begin:s_end + 1]), dst_address[d_begin:d_end + 1]):
+        if match_range_block(src_address[s_begin:s_end + 1], dst_address[d_begin:d_end + 1]):
             dst_address = dst_address.replace(dst_address[d_begin:d_end + 1], src_address[s_begin:s_end + 1])
         s_end, s_begin = find_next_range_block(src_address[:s_begin])
         d_end, d_begin = find_next_range_block(dst_address[:d_begin])
@@ -58,12 +58,12 @@ def match_address(src_address, dst_address):
 
 def find_next_range_block(address):
     begin = len(address) - 1
-    for begin in range(begin, 0, -1):
-        if address[begin] in range_set:
+    for begin in range(begin, -1, -1):
+        if address[begin] in number_set:
             break
 
     end = begin
-    for end in range(end, 0, -1):
+    for end in range(end, -1, -1):
         if not (address[end] in range_set):
             break
 
@@ -75,16 +75,14 @@ def find_next_range_block(address):
 
 def match_range_block(src_range_block, dst_range_block):
     s_begin = 0
-    s_end = len(src_range_block)
+    s_end = len(src_range_block) - 1
     d_begin = 0
-    d_end = len(src_range_block)
+    d_end = len(dst_range_block) - 1
     while s_end != 0 and d_end != 0:
-        s_end = find_next_single_range_block(src_range_block[s_begin:])
-        d_end = find_next_single_range_block(dst_range_block[d_begin:])
+        d_end = d_begin + find_next_single_range_block(dst_range_block[d_begin:])
         if match_single_range_block(src_range_block[s_begin:s_end + 1], dst_range_block[d_begin:d_end + 1]):
             return True
-        s_begin = s_begin + s_end
-        d_begin = d_begin + s_end
+        d_begin = d_end + 2
     return False
 
 
@@ -93,6 +91,9 @@ def find_next_single_range_block(range_block):
     for end in range(end, len(range_block), 1):
         if not (range_block[end] in single_range_set):
             break
+
+    if range_block[end] == '、':
+        end -= 1
 
     return end
 
