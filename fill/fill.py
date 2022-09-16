@@ -125,7 +125,8 @@ class Fill:
                     self.risk_level = risk_data['level']
                     break
 
-    def __query_prefecture_history(self):
+    def __init_query_prefecture_history(self):
+
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                           'Chrome/87.0.4280.88 Safari/537.36',
@@ -141,9 +142,11 @@ class Fill:
                              )
         resp = request.urlopen(rq)
         j = json.loads(resp.read())
-        data = j['data']
+        self.api_data = j['data']
 
-        for i in data:
+    def __query_prefecture_history(self):
+
+        for i in self.api_data:
             if i['confirm_add'] != 0:
                 self.prefecture_history = 1
         self.prefecture_history = 0
@@ -163,10 +166,9 @@ class Fill:
 
     # 获取7天内所在地级市是否有本土疫情发生
     def get_prefecture_history(self):
-
         return self.prefecture_history
 
-        # 获取目前居住地是否为风险区或临时管控区域
+    # 获取目前居住地是否为风险区或临时管控区域
 
     def get_is_risk(self):
         if self.risk_level == 2 or self.risk_level == 3:
