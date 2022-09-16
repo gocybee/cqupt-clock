@@ -12,7 +12,7 @@ RUN pip install selenium -i https://mirrors.aliyun.com/pypi/simple/
 RUN pip install browser-cookie3 -i https://mirrors.aliyun.com/pypi/simple/
 RUN pip install matplotlib -i https://mirrors.aliyun.com/pypi/simple/
 RUN pip install apscheduler -i https://mirrors.aliyun.com/pypi/simple/
-RUN pip install thefuzz -i https://mirrors.aliyun.com/pypi/simple/
+RUN pip install hanlp -i https://mirrors.aliyun.com/pypi/simple/
 # 更新apt-get源
 RUN cp ./dependency/sources.list /etc/apt/sources.list
 RUN apt-get update
