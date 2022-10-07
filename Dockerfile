@@ -23,7 +23,7 @@ RUN chmod +x /usr/bin/chromedriver
 # 设置系统时区
 RUN apt-get install -y tzdata # 该镜像没有zoneinfo文件夹
 RUN rm -f /etc/localtime
-RUN ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' > /etc/timezone
 RUN chmod +x ./run.sh
 
 CMD ["./run.sh"]
