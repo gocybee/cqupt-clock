@@ -1,3 +1,8 @@
+**经过了漫长的近三年的疫情时期，疫情政策终于变开放了起来，所以健康打卡也停止了，因此本项目的使命已经完成**
+
+**让我们迎接没有疫情，没有核酸检测，没有健康打卡的这一天吧~（终于熬到头了，小声逼逼~）**
+
+
 # CQUPT-CLOCK
 
 [![build](https://img.shields.io/badge/build-1.6.0-brightgreen)](https://github.com/StellarisW/StellarisW)[![image](https://img.shields.io/docker/image-size/stellarisw/cqupt-clock)](https://hub.docker.com/repository/docker/stellarisw/cqupt-clock)[![build](https://img.shields.io/badge/flask-v2.2.2-%230e7fc0)](https://github.com/pallets/flask)[![build](https://img.shields.io/badge/pytorch-v1.12.1-%23f37f40)](https://github.com/pytorch/pytorch)
